@@ -5,8 +5,8 @@ Created on 21 Feb 2017
 '''
 
 
-from DeepJetCore.TrainData import TrainData
-from DeepJetCore.dataPipeline import TrainDataGenerator
+from . import TrainData
+from .dataPipeline import TrainDataGenerator
 import tempfile
 import pickle
 import shutil
@@ -14,7 +14,7 @@ import os
 import copy
 import time
 import logging
-from DeepJetCore.stopwatch import stopwatch
+from .stopwatch import stopwatch
 logger = logging.getLogger(__name__)
 
 
@@ -46,14 +46,14 @@ class DataCollection(object):
     
     def setDataClass(self, dataclass):
         self.dataclass = dataclass
-        self.dataclass_instance = self.dataclass()
+        self.dataclass_instance = None
            
     def clear(self):
         self.samples=[]
         self.sourceList=[]
         self.dataDir=""
         self.dataclass = TrainData
-        self.dataclass_instance = self.dataclass()
+        self.dataclass_instance = None
         self.__nsamples = 0
 
     def __iadd__(self, other):
@@ -326,7 +326,7 @@ class DataCollection(object):
         self.dataDir=outputDir
         finishedsamples=len(self.samples)
         
-        self.__writeData_async_andCollect(finishedsamples,outputDir)
+        self._writeData_async_andCollect(finishedsamples,outputDir)
         self.writeToFile(outputDir+'/dataCollection.djcdc')
         
     def getAllLabels(self,nfiles=-1):
@@ -363,14 +363,14 @@ class DataCollection(object):
         self.samples=[]
         self.dataclass=dataclass
         td=self.dataclass()
-
+        self.dataclass_instance=None
         self.weighterobjects = td.createWeighterObjects(self.sourceList)
 
         if self.batch_mode:
             for sample in self.sourceList:
                 self.__writeData(sample, outputDir)
         else:
-            self.__writeData_async_andCollect(0, outputDir)
+            self._writeData_async_andCollect(0, outputDir)
     
     def __writeData(self, sample, outputDir):
         sw=stopwatch()
@@ -391,8 +391,68 @@ class DataCollection(object):
         if not self.batch_mode:
             self.writeToFile(outputDir+'/snapshot.djcdc')
             
+    def _writeData_async(self,index,woq,wrlck,outputDir):
+
+        logger.info('async started')
         
-    def __writeData_async_andCollect(self, startindex, outputDir):
+        sw=stopwatch()
+        td=self.dataclass()
+        sample=self.sourceList[index]
+
+        if self.batch_mode or self.no_copy_on_convert:
+            tmpinput = sample
+
+            def removefile():
+                pass
+        else:
+            tmpinput = tempstoragepath+'/'+str(os.getpid())+'_tmp_'+os.path.basename(sample)
+            
+            def removefile():
+                os.system('rm -f '+tmpinput)
+            
+            import atexit
+            atexit.register(removefile)
+
+            logger.info('start cp')
+            os_ret=os.system('cp '+sample+' '+tmpinput)
+            if os_ret:
+                raise Exception("copy to ramdisk not successful for "+sample)
+            
+        success=False
+        out_samplename=''
+        out_sampleentries=0
+        sbasename = os.path.basename(sample)
+        newname = sbasename[:sbasename.rfind('.')]+'.djctd'
+        newpath=os.path.abspath(outputDir+newname)
+        
+        try:
+            logger.info('convertFromSourceFile')
+            td.writeFromSourceFile(tmpinput, self.weighterobjects, istraining = not self.istestdata, outname=newpath) 
+            print('converted and written '+newname+' in ',sw.getAndReset(),' sec -', index)
+            
+            out_samplename=newname
+            out_sampleentries=1
+            success=True
+            td.clear()
+            removefile()
+            woq.put((index,[success,out_samplename,out_sampleentries]))
+            
+        except:
+            print('problem in '+newname)
+            removefile()
+            woq.put((index,[False,out_samplename,out_sampleentries]))
+            raise 
+    
+    def _collectWriteInfo(self,successful,samplename,sampleentries,outputDir):
+        if not successful:
+            raise Exception("write not successful, stopping")
+
+        self.samples.append(samplename)
+        if not self.batch_mode:
+            self.writeToFile(outputDir+'/snapshot_tmp.djcdc')#avoid to overwrite directly
+            os.system('mv '+outputDir+'/snapshot_tmp.djcdc '+outputDir+'/snapshot.djcdc')
+            
+    def _writeData_async_andCollect(self, startindex, outputDir):
         
         
         from multiprocessing import Process, Queue, cpu_count, Lock
@@ -407,72 +467,13 @@ class DataCollection(object):
         logger.info('creating dir '+tempstoragepath)
         os.system('mkdir -p '+tempstoragepath)
         
-        def writeData_async(index,woq,wrlck):
-
-            logger.info('async started')
-            
-            sw=stopwatch()
-            td=self.dataclass()
-            sample=self.sourceList[index]
-
-            if self.batch_mode or self.no_copy_on_convert:
-                tmpinput = sample
-
-                def removefile():
-                    pass
-            else:
-                tmpinput = tempstoragepath+'/'+str(os.getpid())+'_tmp_'+os.path.basename(sample)
-                
-                def removefile():
-                    os.system('rm -f '+tmpinput)
-                
-                import atexit
-                atexit.register(removefile)
-
-                logger.info('start cp')
-                os_ret=os.system('cp '+sample+' '+tmpinput)
-                if os_ret:
-                    raise Exception("copy to ramdisk not successful for "+sample)
-                
-            success=False
-            out_samplename=''
-            out_sampleentries=0
-            sbasename = os.path.basename(sample)
-            newname = sbasename[:sbasename.rfind('.')]+'.djctd'
-            newpath=os.path.abspath(outputDir+newname)
-            
-            try:
-                logger.info('convertFromSourceFile')
-                td.writeFromSourceFile(tmpinput, self.weighterobjects, istraining = not self.istestdata, outname=newpath) 
-                print('converted and written '+newname+' in ',sw.getAndReset(),' sec -', index)
-                
-                out_samplename=newname
-                out_sampleentries=1
-                success=True
-                td.clear()
-                removefile()
-                woq.put((index,[success,out_samplename,out_sampleentries]))
-                
-            except:
-                print('problem in '+newname)
-                removefile()
-                woq.put((index,[False,out_samplename,out_sampleentries]))
-                raise 
         
-        def __collectWriteInfo(successful,samplename,sampleentries,outputDir):
-            if not successful:
-                raise Exception("write not successful, stopping")
-
-            self.samples.append(samplename)
-            if not self.batch_mode:
-                self.writeToFile(outputDir+'/snapshot_tmp.djcdc')#avoid to overwrite directly
-                os.system('mv '+outputDir+'/snapshot_tmp.djcdc '+outputDir+'/snapshot.djcdc')
             
         processes=[]
         processrunning=[]
         processfinished=[]
         for i in range(startindex,len(self.sourceList)):
-            processes.append(Process(target=writeData_async, args=(i,wo_queue,writelock) ) )
+            processes.append(Process(target=self._writeData_async, args=(i,wo_queue,writelock, outputDir) ) )
             processrunning.append(False)
             processfinished.append(False)
         
@@ -525,7 +526,7 @@ class DataCollection(object):
                     thisidx=r[0]
                     if thisidx==lastindex+1:
                         logging.info('>>>> collected result %d of %d' % (thisidx+1,len(self.sourceList)))
-                        __collectWriteInfo(r[1][0],r[1][1],r[1][2],outputDir)
+                        self._collectWriteInfo(r[1][0],r[1][1],r[1][2],outputDir)
                         lastindex=thisidx        
                 
                 if nrunning==0:

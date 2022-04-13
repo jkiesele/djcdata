@@ -2,8 +2,7 @@
 Checks for file compatibility with (only) the previous version.
 '''
 
-from DeepJetCore.TrainData import TrainData
-from DeepJetCore.SimpleArray import SimpleArray
+from djcdata import TrainData, SimpleArray
 import numpy as np
 import unittest
 

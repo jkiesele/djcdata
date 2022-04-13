@@ -85,8 +85,8 @@ simpleArrayBase::dtypes simpleArrayBase::stringToDtype(const std::string& s){
         throw std::runtime_error("simpleArrayBase::dtypes simpleArrayBase::stringToDtype unknown dtype");
 }
 
-pybind11::list simpleArrayBase::shapePy()const{
-    pybind11::list l;
+py::list simpleArrayBase::shapePy()const{
+    py::list l;
     for(const auto& s: shape_)
         l.append(s);
     return l;

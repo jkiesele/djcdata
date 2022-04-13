@@ -1266,6 +1266,7 @@ py::tuple simpleArray<T>::transferToNumpy(bool pad_rowsplits){
     if(pad_rowsplits){
         auto rsp = padRowsplits();
         auto rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
+
         clear();
         return py::make_tuple(dataarr,rowsplits);
     }

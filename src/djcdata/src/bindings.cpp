@@ -5,6 +5,7 @@
 
 #include "simpleArray.h"
 #include "trainData.h"
+#include "trainDataGenerator.h"
 
 namespace py = pybind11;
 
@@ -17,6 +18,14 @@ void makeArr(M& m, std::string name){
 
             .def(py::self == py::self)
             .def(py::self != py::self)
+
+            //.def("__copy__",  [](const simpleArray<T> &self) {
+            //     return simpleArray<T>(self);
+            // })
+            // .def("__deepcopy__", [](const simpleArray<T> &self, py::dict) {
+            //     return simpleArray<T>(self);
+            // })
+
 
             .def("readDtypeFromFile", &simpleArray<T>::readDtypeFromFile)
 
@@ -75,6 +84,25 @@ void makeTD(M & m, std::string name){
         .def(py::self == py::self)
         .def(py::self != py::self)
 
+        //.def("__copy__",  [](const trainData &self) {
+        //return trainData(self);
+        //})
+        //.def("__deepcopy__", [](const trainData &self, py::dict) {
+        //    return trainData(self);
+        //})
+
+        //no data being copied
+        //.def(py::pickle(
+        //        [](const trainData &p) { // __getstate__
+        //            /* Return a tuple that fully encodes the state of the object */
+        //            return py::make_tuple(0,0);
+        //        },
+        //        [](py::tuple t) { // __setstate__
+        //
+        //            return trainData();
+        //        }
+        //    ))
+
         .def("storeFeatureArray", static_cast<int (trainData::*)(simpleArray_float32 &)>(&trainData::storeFeatureArray))
         .def("storeFeatureArray", static_cast<int (trainData::*)(simpleArray_int32 &)>(&trainData::storeFeatureArray))
 
@@ -129,12 +157,46 @@ void makeTD(M & m, std::string name){
         .def("copyWeightListToNumpy", &trainData::copyWeightListToNumpy);
 }
 
+template<class M>
+void makeTDG(M & m, std::string name){
+    using namespace djc;
+       py::class_<trainDataGenerator>(m, name.data())
+           .def(py::init())
+           .def("setBatchSize", &trainDataGenerator::setBatchSize)
+
+           .def("setFileList", &trainDataGenerator::setFileList)
+           .def("shuffleFileList", &trainDataGenerator::shuffleFileList)
+
+           .def("setBuffer", &trainDataGenerator::setBuffer)
+
+
+           .def("setFileTimeout", &trainDataGenerator::setFileTimeout)
+           .def("setSquaredElementsLimit", &trainDataGenerator::setSquaredElementsLimit)
+           .def("setSkipTooLargeBatches", &trainDataGenerator::setSkipTooLargeBatches)
+
+           .def("clear", &trainDataGenerator::clear)
+           .def("getNBatches", &trainDataGenerator::getNBatches)
+
+           .def("lastBatch", &trainDataGenerator::lastBatch)
+           .def("isEmpty", &trainDataGenerator::isEmpty)
+
+           .def("prepareNextEpoch", &trainDataGenerator::prepareNextEpoch)
+           .def("getBatch", &trainDataGenerator::getBatch)
+
+           .def("getNTotal", &trainDataGenerator::getNTotal)
+
+           .def_readwrite("debuglevel", &trainDataGenerator::debuglevel);
+
+}
+
 //warp it up
 PYBIND11_MODULE(compiled, m) {
     makeArr<float>(m,"simpleArrayF");
     makeArr<int32_t>(m,"simpleArrayI");
 
     makeTD(m,"trainData");
+
+    makeTDG(m, "trainDataGenerator");
 
 }
 

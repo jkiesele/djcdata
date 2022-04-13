@@ -58,8 +58,6 @@ public:
     }
 
 
-    //BOOST REPLACE void setFileListPy(boost::python::list files);
-
     void setBuffer(const trainData&);
 
     void setBatchSize(size_t nelements){

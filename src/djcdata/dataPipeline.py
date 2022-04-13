@@ -1,5 +1,5 @@
 
-from DeepJetCore.compiled.c_trainDataGenerator import trainDataGenerator
+from .compiled import trainDataGenerator
 import numpy as np
 
 class TrainDataGenerator(trainDataGenerator):
