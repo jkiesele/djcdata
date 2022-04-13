@@ -170,29 +170,6 @@ public:
     }
 
 
-
-/// for pybind11 these might not be needed
-    //does not transfer data ownership! only for quick writing etc.
-    //virtual void assignFromNumpy(
-    //        const py::array_t<T, py::array::c_style | py::array::forcecast>& ndarr,
-    //        const py::array_t<T, py::array::c_style | py::array::forcecast>&
-    //        rowsplits=py::array_t<int64_t, py::array::c_style | py::array::forcecast>())=0;
-   //BOOST REPLACE
-   //BOOST REPLACE //copy data
-   //BOOST REPLACE virtual void createFromNumpy(const boost::python::numpy::ndarray& ndarr,
-   //BOOST REPLACE         const boost::python::numpy::ndarray& rowsplits=boost::python::numpy::empty(
-   //BOOST REPLACE                 boost::python::make_tuple(0), boost::python::numpy::dtype::get_builtin<size_t>()))=0;
-   //BOOST REPLACE
-   //BOOST REPLACE //transfers data ownership and cleans simpleArray instance
-   //BOOST REPLACE virtual boost::python::tuple transferToNumpy(bool pad_rowsplits=false)=0;
-   //BOOST REPLACE
-   //BOOST REPLACE //copy data
-   //BOOST REPLACE virtual boost::python::tuple copyToNumpy(bool pad_rowsplits=false)const=0;
-   //BOOST REPLACE
-   //BOOST REPLACE virtual void setFeatureNamesPy(boost::python::list l)=0;
-   //BOOST REPLACE virtual boost::python::list featureNamesPy()=0;
-
-
 protected:
     std::vector<int> shape_;
     std::string name_;
@@ -1313,20 +1290,6 @@ py::tuple simpleArray<T>::copyToNumpy(bool pad_rowsplits)const{
     return py::make_tuple(dataarr,rowsplits);
 
  }
-//BOOST REPLACE
-//BOOST REPLACE template<class T>
-//BOOST REPLACE void simpleArray<T>::setFeatureNamesPy(boost::python::list l){
-//BOOST REPLACE     std::vector<std::string> names = toSTLVector<std::string>(l);
-//BOOST REPLACE     setFeatureNames(names);
-//BOOST REPLACE }
-//BOOST REPLACE template<class T>
-//BOOST REPLACE boost::python::list simpleArray<T>::featureNamesPy(){
-//BOOST REPLACE     boost::python::list l;
-//BOOST REPLACE     for(const auto& v:featureNames())
-//BOOST REPLACE         l.append(v);
-//BOOST REPLACE     return l;
-//BOOST REPLACE }
-
 
 
 typedef simpleArray<float> simpleArray_float32;

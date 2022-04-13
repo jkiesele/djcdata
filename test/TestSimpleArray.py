@@ -1,4 +1,5 @@
-from DeepJetCore.SimpleArray import SimpleArray
+
+from djcdata import SimpleArray
 import numpy as np
 import unittest
 import os

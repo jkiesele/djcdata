@@ -1,6 +1,7 @@
 // empty
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/operators.h>
 #include "simpleArray.h"
 
 namespace py = pybind11;
@@ -10,6 +11,10 @@ template<class T, class M>
 void makeArr(M& m, std::string name){
 py::class_<simpleArray<T> >(m, name.data())
     .def(py::init())
+
+    .def(py::self == py::self)
+    .def(py::self != py::self)
+
     .def("readDtypeFromFile", &simpleArray<T>::readDtypeFromFile)
 
     .def("setName", &simpleArray<T>::setName)

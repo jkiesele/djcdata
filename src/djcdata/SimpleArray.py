@@ -1,5 +1,5 @@
  
-from DeepJetCore.compiled.c_simpleArray import simpleArrayF, simpleArrayI
+from .compiled import simpleArrayF, simpleArrayI
 import numpy as np
 
 class SimpleArray(object):
