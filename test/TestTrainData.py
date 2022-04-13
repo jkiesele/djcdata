@@ -1,5 +1,5 @@
-from DeepJetCore.TrainData import TrainData
-from DeepJetCore.SimpleArray import SimpleArray
+from djcdata.TrainData import TrainData
+from djcdata.SimpleArray import SimpleArray
 import numpy as np
 import unittest
 import os

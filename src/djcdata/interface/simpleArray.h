@@ -165,6 +165,8 @@ public:
     static std::vector<int64_t> splitRowSplits(std::vector<int64_t> & rowsplits, const size_t& splitpoint);
 
 
+    virtual py::tuple transferToNumpy(bool pad_rowsplits=false)=0;
+
     int isize() const {
         return (int)size_;
     }

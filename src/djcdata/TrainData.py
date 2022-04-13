@@ -10,8 +10,8 @@ import os
 import numpy as np
 import logging
 
-from DeepJetCore.compiled.c_trainData import trainData
-from DeepJetCore.SimpleArray import SimpleArray
+from .compiled import trainData
+from . import SimpleArray
 import time
 
 def fileTimeOut(fileName, timeOut):
@@ -56,7 +56,7 @@ class TrainData(trainData):
     
     def _convertToCppType(self,a,helptext):
         saout=None
-        if str(type(a)) == "<class 'DeepJetCore.SimpleArray.SimpleArray'>":
+        if str(type(a)) == "<class 'djcdata.SimpleArray.SimpleArray'>":
             saout = a.sa
         elif str(type(a)) == "<type 'numpy.ndarray'>" or str(type(a)) == "<class 'numpy.ndarray'>":
             rs = np.array([])
