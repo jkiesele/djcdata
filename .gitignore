@@ -20,5 +20,6 @@ __pycache__
 #*.*#
 build/
 *.egg-info/
-bin/make_example_data_overlap
-
+.cproject
+.project
+.settings
