@@ -8,10 +8,6 @@
 #ifndef DJCDEV_DEEPJETCORE_COMPILED_INTERFACE_TRAINDATAGENERATOR_H_
 #define DJCDEV_DEEPJETCORE_COMPILED_INTERFACE_TRAINDATAGENERATOR_H_
 
-#include <boost/python.hpp>
-#include "boost/python/numpy.hpp"
-#include "boost/python/list.hpp"
-#include <boost/python/exception_translator.hpp>
 #include "helper.h"
 #include "pythonToSTL.h"
 
@@ -62,7 +58,7 @@ public:
     }
 
 
-    void setFileListPy(boost::python::list files);
+    //BOOST REPLACE void setFileListPy(boost::python::list files);
 
     void setBuffer(const trainData&);
 

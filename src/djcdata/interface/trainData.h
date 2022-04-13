@@ -10,10 +10,6 @@
 
 //#define DJC_DATASTRUCTURE_PYTHON_BINDINGS//DEBUG
 
-#include <boost/python.hpp>
-#include "boost/python/numpy.hpp"
-#include "boost/python/list.hpp"
-#include <boost/python/exception_translator.hpp>
 #include "helper.h"
 
 #include "simpleArray.h"
@@ -240,70 +236,70 @@ public:
 
 
 
-    inline boost::python::list getNumpyFeatureShapes()const{
-        return transferShapesToPyList(feature_shapes_);
-    }
-    inline boost::python::list getNumpyTruthShapes()const{
-        return transferShapesToPyList(truth_shapes_);
-    }
-    inline boost::python::list getNumpyWeightShapes()const{
-        return transferShapesToPyList(weight_shapes_);
-    }
-
-    inline boost::python::list getNumpyFeatureDTypes()const{
-        return transferDTypesToPyList(feature_arrays_);
-    }
-    inline boost::python::list getNumpyTruthDTypes()const{
-        return transferDTypesToPyList(truth_arrays_);
-    }
-    inline boost::python::list getNumpyWeightDTypes()const{
-        return transferDTypesToPyList(weight_arrays_);
-    }
-
-    inline boost::python::list getNumpyFeatureArrayNames()const{
-        return transferNamesToPyList(feature_arrays_);
-    }
-    inline boost::python::list getNumpyTruthArrayNames()const{
-        return transferNamesToPyList(truth_arrays_);
-    }
-    inline boost::python::list getNumpyWeightArrayNames()const{
-        return transferNamesToPyList(weight_arrays_);
-    }
-
-    //has ragged support
-    boost::python::list transferFeatureListToNumpy(bool padrowsplits=false);
-
-    //has ragged support
-    boost::python::list transferTruthListToNumpy(bool padrowsplits=false);
-
-    //no ragged support
-    boost::python::list transferWeightListToNumpy(bool padrowsplits=false);
-
-
-    boost::python::list getTruthRaggedFlags()const;
-
-    /*
-     * the following ones can be improved w.r.t. performance
-     */
-
-
-    //has ragged support
-    boost::python::list copyFeatureListToNumpy(bool padrowsplits=false){
-        auto td = *this;
-        return td.transferFeatureListToNumpy(padrowsplits); //fast hack
-    }
-
-    //has ragged support
-    boost::python::list copyTruthListToNumpy(bool padrowsplits=false){
-        auto td = *this;
-        return td.transferTruthListToNumpy(padrowsplits); //fast hack
-    }
-
-    //no ragged support
-    boost::python::list copyWeightListToNumpy(bool padrowsplits=false){
-        auto td = *this;
-        return td.transferWeightListToNumpy(padrowsplits); //fast hack
-    }
+    //BOOST REPLACE inline boost::python::list getNumpyFeatureShapes()const{
+    //BOOST REPLACE     return transferShapesToPyList(feature_shapes_);
+    //BOOST REPLACE }
+    //BOOST REPLACE inline boost::python::list getNumpyTruthShapes()const{
+    //BOOST REPLACE     return transferShapesToPyList(truth_shapes_);
+    //BOOST REPLACE }
+    //BOOST REPLACE inline boost::python::list getNumpyWeightShapes()const{
+    //BOOST REPLACE     return transferShapesToPyList(weight_shapes_);
+    //BOOST REPLACE }
+    //BOOST REPLACE
+    //BOOST REPLACE inline boost::python::list getNumpyFeatureDTypes()const{
+    //BOOST REPLACE     return transferDTypesToPyList(feature_arrays_);
+    //BOOST REPLACE }
+    //BOOST REPLACE inline boost::python::list getNumpyTruthDTypes()const{
+    //BOOST REPLACE     return transferDTypesToPyList(truth_arrays_);
+    //BOOST REPLACE }
+    //BOOST REPLACE inline boost::python::list getNumpyWeightDTypes()const{
+    //BOOST REPLACE     return transferDTypesToPyList(weight_arrays_);
+    //BOOST REPLACE }
+    //BOOST REPLACE
+    //BOOST REPLACE inline boost::python::list getNumpyFeatureArrayNames()const{
+    //BOOST REPLACE     return transferNamesToPyList(feature_arrays_);
+    //BOOST REPLACE }
+    //BOOST REPLACE inline boost::python::list getNumpyTruthArrayNames()const{
+    //BOOST REPLACE     return transferNamesToPyList(truth_arrays_);
+    //BOOST REPLACE }
+    //BOOST REPLACE inline boost::python::list getNumpyWeightArrayNames()const{
+    //BOOST REPLACE     return transferNamesToPyList(weight_arrays_);
+    //BOOST REPLACE }
+    //BOOST REPLACE
+    //BOOST REPLACE //has ragged support
+    //BOOST REPLACE boost::python::list transferFeatureListToNumpy(bool padrowsplits=false);
+    //BOOST REPLACE
+    //BOOST REPLACE //has ragged support
+    //BOOST REPLACE boost::python::list transferTruthListToNumpy(bool padrowsplits=false);
+    //BOOST REPLACE
+    //BOOST REPLACE //no ragged support
+    //BOOST REPLACE boost::python::list transferWeightListToNumpy(bool padrowsplits=false);
+    //BOOST REPLACE
+    //BOOST REPLACE
+    //BOOST REPLACE boost::python::list getTruthRaggedFlags()const;
+    //BOOST REPLACE
+    //BOOST REPLACE /*
+    //BOOST REPLACE  * the following ones can be improved w.r.t. performance
+    //BOOST REPLACE  */
+    //BOOST REPLACE
+    //BOOST REPLACE
+    //BOOST REPLACE //has ragged support
+    //BOOST REPLACE boost::python::list copyFeatureListToNumpy(bool padrowsplits=false){
+    //BOOST REPLACE     auto td = *this;
+    //BOOST REPLACE     return td.transferFeatureListToNumpy(padrowsplits); //fast hack
+    //BOOST REPLACE }
+    //BOOST REPLACE
+    //BOOST REPLACE //has ragged support
+    //BOOST REPLACE boost::python::list copyTruthListToNumpy(bool padrowsplits=false){
+    //BOOST REPLACE     auto td = *this;
+    //BOOST REPLACE     return td.transferTruthListToNumpy(padrowsplits); //fast hack
+    //BOOST REPLACE }
+    //BOOST REPLACE
+    //BOOST REPLACE //no ragged support
+    //BOOST REPLACE boost::python::list copyWeightListToNumpy(bool padrowsplits=false){
+    //BOOST REPLACE     auto td = *this;
+    //BOOST REPLACE     return td.transferWeightListToNumpy(padrowsplits); //fast hack
+    //BOOST REPLACE }
 
 
 private:
@@ -327,9 +323,9 @@ private:
 
     void updateShapes();
 
-    boost::python::list transferNamesToPyList(const typeContainer&)const;
-    boost::python::list transferShapesToPyList(const std::vector<std::vector<int> >&)const;
-    boost::python::list transferDTypesToPyList(const typeContainer&)const;
+    //BOOST REPLACE boost::python::list transferNamesToPyList(const typeContainer&)const;
+    //BOOST REPLACE boost::python::list transferShapesToPyList(const std::vector<std::vector<int> >&)const;
+    //BOOST REPLACE boost::python::list transferDTypesToPyList(const typeContainer&)const;
 
 
     typeContainer feature_arrays_;
@@ -341,7 +337,7 @@ private:
     std::vector<std::vector<int> > weight_shapes_;
 
 
-    boost::python::list transferToNumpyList(typeContainer& , bool pad_rowsplits);
+    //BOOST REPLACE boost::python::list transferToNumpyList(typeContainer& , bool pad_rowsplits);
 
 
 };

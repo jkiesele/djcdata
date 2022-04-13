@@ -516,109 +516,109 @@ void trainData::skim(size_t batchelement){
 }
 
 
-boost::python::list trainData::transferNamesToPyList(const typeContainer& tc)const{
-    boost::python::list out;
-    for(size_t i=0;i<tc.size();i++){
-        auto name = tc.at(i).name();
-        if(! name.length()){
-            name = std::to_string(i);//set a default name
-        }
-        out.append(name);
-        if(tc.at(i).isRagged())
-            out.append(name+"_rowsplits");
-    }
-    return out;
-}
-
-boost::python::list trainData::transferShapesToPyList(const std::vector<std::vector<int> >& vs)const{
-    boost::python::list out;
-    for(const auto& a: vs){
-        boost::python::list nlist;
-        bool wasragged=false;
-        for(size_t i=1;i<a.size();i++){
-            if(a.at(i)<0){
-                nlist = boost::python::list();//ignore everything before
-                wasragged=true;
-            }
-            else
-                nlist.append(std::abs(a.at(i)));
-        }
-        out.append(nlist);
-        if(wasragged){
-            boost::python::list rslist;
-            rslist.append(1);
-            out.append(rslist);
-        }
-    }
-    return out;
-}
-
-boost::python::list trainData::transferDTypesToPyList(const typeContainer& tc)const{
-    boost::python::list out;
-    for(size_t k=0;k<tc.size();k++){
-        const auto& a = tc.at(k).shape();
-
-        bool isragged=false;
-        for(size_t i=0;i<a.size();i++){
-            if(a.at(i)<0){
-                isragged=true;
-                break;
-            }
-        }
-        out.append(tc.at(k).dtypeString());
-        if(isragged)
-            out.append("int64");
-    }
-    return out;
-}
-
-
-boost::python::list trainData::getTruthRaggedFlags()const{
-    boost::python::list out;
-    for(const auto& a: truth_shapes_){
-        bool isragged = false;
-        for(const auto & s: a)
-            if(s<0){
-                isragged=true;
-                break;
-            }
-        if(isragged)
-            out.append(true);
-        else
-            out.append(false);
-    }
-    return out;
-}
-
-boost::python::list trainData::transferToNumpyList(typeContainer& c, bool pad_rowsplits){
-    namespace p = boost::python;
-    namespace np = boost::python::numpy;
-    p::list out;
-    for(size_t i=0;i<c.size();i++){
-        auto& a = c.at(i);
-        if(a.isRagged()){
-            auto arrt = a.transferToNumpy(pad_rowsplits);//pad row splits
-            out.append(arrt[0]);//data
-            np::ndarray rs = boost::python::extract<np::ndarray>(arrt[1]);
-            out.append(rs.reshape(p::make_tuple(-1,1)));//row splits
-        }
-        else
-            out.append(a.transferToNumpy(false)[0]);
-    }
-    return out;
-}
-
-
-boost::python::list trainData::transferFeatureListToNumpy(bool padrowsplits){
-    return transferToNumpyList(feature_arrays_,padrowsplits);
-}
-
-boost::python::list trainData::transferTruthListToNumpy(bool padrowsplits){
-    return transferToNumpyList(truth_arrays_,padrowsplits);
-}
-
-boost::python::list trainData::transferWeightListToNumpy(bool padrowsplits){
-    return transferToNumpyList(weight_arrays_,padrowsplits);
-}
+//BOOST REPLACE boost::python::list trainData::transferNamesToPyList(const typeContainer& tc)const{
+//BOOST REPLACE     boost::python::list out;
+//BOOST REPLACE     for(size_t i=0;i<tc.size();i++){
+//BOOST REPLACE         auto name = tc.at(i).name();
+//BOOST REPLACE         if(! name.length()){
+//BOOST REPLACE             name = std::to_string(i);//set a default name
+//BOOST REPLACE         }
+//BOOST REPLACE         out.append(name);
+//BOOST REPLACE         if(tc.at(i).isRagged())
+//BOOST REPLACE             out.append(name+"_rowsplits");
+//BOOST REPLACE     }
+//BOOST REPLACE     return out;
+//BOOST REPLACE }
+//BOOST REPLACE
+//BOOST REPLACE boost::python::list trainData::transferShapesToPyList(const std::vector<std::vector<int> >& vs)const{
+//BOOST REPLACE     boost::python::list out;
+//BOOST REPLACE     for(const auto& a: vs){
+//BOOST REPLACE         boost::python::list nlist;
+//BOOST REPLACE         bool wasragged=false;
+//BOOST REPLACE         for(size_t i=1;i<a.size();i++){
+//BOOST REPLACE             if(a.at(i)<0){
+//BOOST REPLACE                 nlist = boost::python::list();//ignore everything before
+//BOOST REPLACE                 wasragged=true;
+//BOOST REPLACE             }
+//BOOST REPLACE             else
+//BOOST REPLACE                 nlist.append(std::abs(a.at(i)));
+//BOOST REPLACE         }
+//BOOST REPLACE         out.append(nlist);
+//BOOST REPLACE         if(wasragged){
+//BOOST REPLACE             boost::python::list rslist;
+//BOOST REPLACE             rslist.append(1);
+//BOOST REPLACE             out.append(rslist);
+//BOOST REPLACE         }
+//BOOST REPLACE     }
+//BOOST REPLACE     return out;
+//BOOST REPLACE }
+//BOOST REPLACE
+//BOOST REPLACE boost::python::list trainData::transferDTypesToPyList(const typeContainer& tc)const{
+//BOOST REPLACE     boost::python::list out;
+//BOOST REPLACE     for(size_t k=0;k<tc.size();k++){
+//BOOST REPLACE         const auto& a = tc.at(k).shape();
+//BOOST REPLACE
+//BOOST REPLACE         bool isragged=false;
+//BOOST REPLACE         for(size_t i=0;i<a.size();i++){
+//BOOST REPLACE             if(a.at(i)<0){
+//BOOST REPLACE                 isragged=true;
+//BOOST REPLACE                 break;
+//BOOST REPLACE             }
+//BOOST REPLACE         }
+//BOOST REPLACE         out.append(tc.at(k).dtypeString());
+//BOOST REPLACE         if(isragged)
+//BOOST REPLACE             out.append("int64");
+//BOOST REPLACE     }
+//BOOST REPLACE     return out;
+//BOOST REPLACE }
+//BOOST REPLACE
+//BOOST REPLACE
+//BOOST REPLACE boost::python::list trainData::getTruthRaggedFlags()const{
+//BOOST REPLACE     boost::python::list out;
+//BOOST REPLACE     for(const auto& a: truth_shapes_){
+//BOOST REPLACE         bool isragged = false;
+//BOOST REPLACE         for(const auto & s: a)
+//BOOST REPLACE             if(s<0){
+//BOOST REPLACE                 isragged=true;
+//BOOST REPLACE                 break;
+//BOOST REPLACE             }
+//BOOST REPLACE         if(isragged)
+//BOOST REPLACE             out.append(true);
+//BOOST REPLACE         else
+//BOOST REPLACE             out.append(false);
+//BOOST REPLACE     }
+//BOOST REPLACE     return out;
+//BOOST REPLACE }
+//BOOST REPLACE
+//BOOST REPLACE boost::python::list trainData::transferToNumpyList(typeContainer& c, bool pad_rowsplits){
+//BOOST REPLACE     namespace p = boost::python;
+//BOOST REPLACE     namespace np = boost::python::numpy;
+//BOOST REPLACE     p::list out;
+//BOOST REPLACE     for(size_t i=0;i<c.size();i++){
+//BOOST REPLACE         auto& a = c.at(i);
+//BOOST REPLACE         if(a.isRagged()){
+//BOOST REPLACE             auto arrt = a.transferToNumpy(pad_rowsplits);//pad row splits
+//BOOST REPLACE             out.append(arrt[0]);//data
+//BOOST REPLACE             np::ndarray rs = boost::python::extract<np::ndarray>(arrt[1]);
+//BOOST REPLACE             out.append(rs.reshape(p::make_tuple(-1,1)));//row splits
+//BOOST REPLACE         }
+//BOOST REPLACE         else
+//BOOST REPLACE             out.append(a.transferToNumpy(false)[0]);
+//BOOST REPLACE     }
+//BOOST REPLACE     return out;
+//BOOST REPLACE }
+//BOOST REPLACE
+//BOOST REPLACE
+//BOOST REPLACE boost::python::list trainData::transferFeatureListToNumpy(bool padrowsplits){
+//BOOST REPLACE     return transferToNumpyList(feature_arrays_,padrowsplits);
+//BOOST REPLACE }
+//BOOST REPLACE
+//BOOST REPLACE boost::python::list trainData::transferTruthListToNumpy(bool padrowsplits){
+//BOOST REPLACE     return transferToNumpyList(truth_arrays_,padrowsplits);
+//BOOST REPLACE }
+//BOOST REPLACE
+//BOOST REPLACE boost::python::list trainData::transferWeightListToNumpy(bool padrowsplits){
+//BOOST REPLACE     return transferToNumpyList(weight_arrays_,padrowsplits);
+//BOOST REPLACE }
 
 }//ns

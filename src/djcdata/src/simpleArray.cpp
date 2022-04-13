@@ -85,12 +85,12 @@ simpleArrayBase::dtypes simpleArrayBase::stringToDtype(const std::string& s){
         throw std::runtime_error("simpleArrayBase::dtypes simpleArrayBase::stringToDtype unknown dtype");
 }
 
-boost::python::list simpleArrayBase::shapePy()const{
-    boost::python::list l;
-    for(const auto& s: shape_)
-        l.append(s);
-    return l;
-}
+//BOOST REPLACE boost::python::list simpleArrayBase::shapePy()const{
+//BOOST REPLACE     boost::python::list l;
+//BOOST REPLACE     for(const auto& s: shape_)
+//BOOST REPLACE         l.append(s);
+//BOOST REPLACE     return l;
+//BOOST REPLACE }
 
 std::string simpleArrayBase::readDtypeFromFileP(FILE *& ifile)const{
     return dtypeToString(readDtypeTypeFromFileP(ifile));
