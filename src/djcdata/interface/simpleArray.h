@@ -23,8 +23,12 @@
 #include <sstream>
 #include <cmath>
 
+#include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
+
 namespace djc{
 
+namespace py=pybind11;
 
 //has all non-data operations
 class simpleArrayBase {
@@ -79,7 +83,7 @@ public:
 
     virtual bool hasNanOrInf()const=0;
 
-    //BOOST REPLACE boost::python::list shapePy()const;
+    py::list shapePy()const;
 
     const size_t& size() const {
         return size_;
@@ -167,11 +171,12 @@ public:
 
 
 
-
-   //BOOST REPLACE //does not transfer data ownership! only for quick writing etc.
-   //BOOST REPLACE virtual void assignFromNumpy(const boost::python::numpy::ndarray& ndarr,
-   //BOOST REPLACE         const boost::python::numpy::ndarray& rowsplits=boost::python::numpy::empty(
-   //BOOST REPLACE                 boost::python::make_tuple(0), boost::python::numpy::dtype::get_builtin<size_t>()))=0;
+/// for pybind11 these might not be needed
+    //does not transfer data ownership! only for quick writing etc.
+    //virtual void assignFromNumpy(
+    //        const py::array_t<T, py::array::c_style | py::array::forcecast>& ndarr,
+    //        const py::array_t<T, py::array::c_style | py::array::forcecast>&
+    //        rowsplits=py::array_t<int64_t, py::array::c_style | py::array::forcecast>())=0;
    //BOOST REPLACE
    //BOOST REPLACE //copy data
    //BOOST REPLACE virtual void createFromNumpy(const boost::python::numpy::ndarray& ndarr,
@@ -222,6 +227,8 @@ template<class T>
 class simpleArray: public simpleArrayBase { //inherits and implements data operations
 public:
 
+    typedef py::array_t<T, py::array::c_style | py::array::forcecast> nparrT;
+    typedef py::array_t<int64_t, py::array::c_style | py::array::forcecast> nparr64;
 
     simpleArray();
     // row splits are indicated by a merged dimension with negative sign
@@ -368,23 +375,18 @@ public:
 
 
     //does not transfer data ownership! only for quick writing etc.
-   //BOOST REPLACE void assignFromNumpy(const boost::python::numpy::ndarray& ndarr,
-   //BOOST REPLACE         const boost::python::numpy::ndarray& rowsplits=boost::python::numpy::empty(
-   //BOOST REPLACE                 boost::python::make_tuple(0), boost::python::numpy::dtype::get_builtin<size_t>()));
-   //BOOST REPLACE
-   //BOOST REPLACE //copy data
-   //BOOST REPLACE void createFromNumpy(const boost::python::numpy::ndarray& ndarr,
-   //BOOST REPLACE         const boost::python::numpy::ndarray& rowsplits=boost::python::numpy::empty(
-   //BOOST REPLACE                 boost::python::make_tuple(0), boost::python::numpy::dtype::get_builtin<size_t>()));
-   //BOOST REPLACE
-   //BOOST REPLACE //transfers data ownership and cleans simpleArray instance
-   //BOOST REPLACE boost::python::tuple transferToNumpy(bool pad_rowsplits=false);
-   //BOOST REPLACE
-   //BOOST REPLACE //copy data
-   //BOOST REPLACE boost::python::tuple copyToNumpy(bool pad_rowsplits=false)const;
-   //BOOST REPLACE
-   //BOOST REPLACE void setFeatureNamesPy(boost::python::list l);
-   //BOOST REPLACE boost::python::list featureNamesPy();
+    void assignFromNumpy(const nparrT& ndarr, const nparr64& rowsplits=nparr64());
+
+
+    //copy data
+    void createFromNumpy(const nparrT& ndarr, const nparr64& rowsplits=nparr64());
+
+    //transfers data ownership and cleans simpleArray instance
+    py::tuple transferToNumpy(bool pad_rowsplits=false);
+
+    //copy data
+    py::tuple copyToNumpy(bool pad_rowsplits=false)const;
+
 
 
 
@@ -405,11 +407,8 @@ private:
 
 
     std::vector<int> makeNumpyShape()const;
-   //BOOST REPLACE void checkArray(const boost::python::numpy::ndarray& ndarr,
-   //BOOST REPLACE         boost::python::numpy::dtype dt=boost::python::numpy::dtype::get_builtin<T>())const;
-   //BOOST REPLACE void fromNumpy(const boost::python::numpy::ndarray& ndarr,
-   //BOOST REPLACE             const boost::python::numpy::ndarray& rowsplits,
-   //BOOST REPLACE             bool copy);
+    void checkArray(const nparrT& ndarr)const;
+    void fromNumpy(const nparrT& ndarr,const nparr64& rowsplits,bool copy);
 
 
     T * data_;
@@ -1201,85 +1200,64 @@ std::vector<int> simpleArray<T>::makeNumpyShape()const{
     return out;
 }
 
-//BOOST REPLACE template<class T>
-//BOOST REPLACE void simpleArray<T>::checkArray(const boost::python::numpy::ndarray& ndarr,
-//BOOST REPLACE         boost::python::numpy::dtype dt)const{
-//BOOST REPLACE     namespace p = boost::python;
-//BOOST REPLACE     namespace np = boost::python::numpy;
-//BOOST REPLACE
-//BOOST REPLACE     if(ndarr.get_dtype() != dt){
-//BOOST REPLACE         std::string dts = p::extract<std::string>(p::str(ndarr.get_dtype()));
-//BOOST REPLACE         std::string dtse = p::extract<std::string>(p::str(dt));
-//BOOST REPLACE         std::cout <<"input has dtype "<< dts <<  " expected " << dtse<< std::endl;
-//BOOST REPLACE         throw std::runtime_error("simpleArray<T>::checkArray: at least one array does not have right type. (e.g. row split must be int64)");
-//BOOST REPLACE     }
-//BOOST REPLACE     auto flags = ndarr.get_flags();
-//BOOST REPLACE     if(!(flags & np::ndarray::CARRAY) || !(flags & np::ndarray::C_CONTIGUOUS)){
-//BOOST REPLACE         throw std::runtime_error("simpleArray<T>::checkArray: at least one array is not C contiguous, please pass as numpy.ascontiguousarray(a, dtype='float32')");
-//BOOST REPLACE     }
-//BOOST REPLACE }
-//BOOST REPLACE
-//BOOST REPLACE template<class T>
-//BOOST REPLACE void simpleArray<T>::fromNumpy(const boost::python::numpy::ndarray& ndarr,
-//BOOST REPLACE         const boost::python::numpy::ndarray& rowsplits, bool copy){
-//BOOST REPLACE     namespace p = boost::python;
-//BOOST REPLACE     namespace np = boost::python::numpy;
-//BOOST REPLACE
-//BOOST REPLACE     clear();
-//BOOST REPLACE     checkArray(ndarr, np::dtype::get_builtin<T>());
-//BOOST REPLACE
-//BOOST REPLACE     T * npdata = (T*)(void*) ndarr.get_data();
-//BOOST REPLACE     data_ = npdata;
-//BOOST REPLACE
-//BOOST REPLACE     int ndim = ndarr.get_nd();
-//BOOST REPLACE     std::vector<int> shape;
-//BOOST REPLACE     for(int s=0;s<ndim;s++)
-//BOOST REPLACE         shape.push_back(ndarr.shape(s));
-//BOOST REPLACE
-//BOOST REPLACE     //check row splits, anyway copied
-//BOOST REPLACE     if(len(rowsplits)>0){
-//BOOST REPLACE         checkArray(rowsplits, np::dtype::get_builtin<int64_t>());
-//BOOST REPLACE         rowsplits_.resize(len(rowsplits));
-//BOOST REPLACE         memcpy(&(rowsplits_.at(0)),(int64_t*)(void*) rowsplits.get_data(), rowsplits_.size() * sizeof(int64_t));
-//BOOST REPLACE         //check if row splits make sense
-//BOOST REPLACE         if(shape.at(0) != rowsplits_.at(rowsplits_.size()-1)){
-//BOOST REPLACE             throw std::out_of_range("simpleArray<T>::fromNumpy: row splits and input array incompatible. rowsplits[-1] != arr.shape[0].");
-//BOOST REPLACE         }
-//BOOST REPLACE         shape.insert(shape.begin(),len(rowsplits)-1);
-//BOOST REPLACE         shape_ = shape;
-//BOOST REPLACE         shape_ = shapeFromRowsplits();
-//BOOST REPLACE     }
-//BOOST REPLACE     else{
-//BOOST REPLACE         shape_ = shape;
-//BOOST REPLACE     }
-//BOOST REPLACE     size_ = sizeFromShape(shape_);
-//BOOST REPLACE
-//BOOST REPLACE     if(copy){
-//BOOST REPLACE         assigned_=false;
-//BOOST REPLACE         data_ = new T[size_];
-//BOOST REPLACE         memcpy(data_, npdata, size_* sizeof(T));
-//BOOST REPLACE     }
-//BOOST REPLACE     else{
-//BOOST REPLACE         assigned_=true;
-//BOOST REPLACE     }
-//BOOST REPLACE }
-//BOOST REPLACE
-//BOOST REPLACE template<class T>
-//BOOST REPLACE void simpleArray<T>::assignFromNumpy(const boost::python::numpy::ndarray& ndarr,
-//BOOST REPLACE         const boost::python::numpy::ndarray& rowsplits){
-//BOOST REPLACE     fromNumpy(ndarr,rowsplits, false);
-//BOOST REPLACE }
-//BOOST REPLACE template<class T>
-//BOOST REPLACE void simpleArray<T>::createFromNumpy(const boost::python::numpy::ndarray& ndarr,
-//BOOST REPLACE         const boost::python::numpy::ndarray& rowsplits){
-//BOOST REPLACE     fromNumpy(ndarr,rowsplits, true);
-//BOOST REPLACE }
+template<class T>
+void simpleArray<T>::checkArray(const nparrT& ndarr)const{
+    return; //not needed because of type check in pybind11
+}
 
+ template<class T>
+ void simpleArray<T>::fromNumpy(const nparrT& ndarr,const nparr64&  rowsplits, bool copy){
 
-//BOOST REPLACE inline void destroyManagerCObject(PyObject* self) {
-//BOOST REPLACE     auto * b = reinterpret_cast<float*>( PyCapsule_GetPointer(self, NULL) );
-//BOOST REPLACE     delete [] b;
-//BOOST REPLACE }
+     clear();
+     checkArray(ndarr);
+
+     py::buffer_info nparrbuf = ndarr.request();
+     py::buffer_info rsbuf = rowsplits.request();
+
+     T * npdata = (T*)(void*) nparrbuf.ptr;
+     data_ = npdata;
+
+     int ndim = nparrbuf.ndim;
+     std::vector<int> shape;
+     for(int s=0;s<ndim;s++)
+         shape.push_back(nparrbuf.shape.at(s));
+
+     //check row splits, anyway copied
+     if(rsbuf.size>0){
+         rowsplits_.resize(rsbuf.size);
+         memcpy(&(rowsplits_.at(0)),(int64_t*)(void*) rsbuf.ptr, rowsplits_.size() * sizeof(int64_t));
+         //check if row splits make sense
+         if(shape.at(0) != rowsplits_.at(rowsplits_.size()-1)){
+             throw std::out_of_range("simpleArray<T>::fromNumpy: row splits and input array incompatible. rowsplits[-1] != arr.shape[0].");
+         }
+         shape.insert(shape.begin(),rsbuf.size-1);
+         shape_ = shape;
+         shape_ = shapeFromRowsplits();
+     }
+     else{
+         shape_ = shape;
+     }
+     size_ = sizeFromShape(shape_);
+
+     if(copy){
+         assigned_=false;
+         data_ = new T[size_];
+         memcpy(data_, npdata, size_* sizeof(T));
+     }
+     else{
+         assigned_=true;
+     }
+ }
+
+template<class T>
+void simpleArray<T>::assignFromNumpy(const nparrT& ndarr,const nparr64&  rowsplits){
+    fromNumpy(ndarr,rowsplits, false);
+}
+template<class T>
+void simpleArray<T>::createFromNumpy(const nparrT& ndarr,const nparr64&  rowsplits){
+    fromNumpy(ndarr,rowsplits, true);
+}
+
 
 template<class T>
 std::vector<int64_t> simpleArray<T>::padRowsplits()const{ //rs 0, 1, 1 element
@@ -1299,47 +1277,42 @@ std::vector<int64_t> simpleArray<T>::padRowsplits()const{ //rs 0, 1, 1 element
 }
 
 //transfers data ownership and cleans simpleArray instance
-//BOOST REPLACE template<class T>
-//BOOST REPLACE boost::python::tuple simpleArray<T>::transferToNumpy(bool pad_rowsplits){
-//BOOST REPLACE     namespace p = boost::python;
-//BOOST REPLACE     namespace np = boost::python::numpy;
-//BOOST REPLACE
-//BOOST REPLACE     auto shape = makeNumpyShape();
-//BOOST REPLACE     T * data_ptr = disownData();
-//BOOST REPLACE
-//BOOST REPLACE     np::ndarray dataarr = STLToNumpy<T>(data_ptr, shape, size(), false);
-//BOOST REPLACE     if(pad_rowsplits){
-//BOOST REPLACE         auto rsp = padRowsplits();
-//BOOST REPLACE         np::ndarray rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
-//BOOST REPLACE         clear();
-//BOOST REPLACE         return p::make_tuple(dataarr,rowsplits);
-//BOOST REPLACE     }
-//BOOST REPLACE     //don't check. if rowsplits_.size()==0 function will return empty array and igonre invalid pointer
-//BOOST REPLACE     np::ndarray rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size()}, rowsplits_.size(), true);
-//BOOST REPLACE     clear();//reset all
-//BOOST REPLACE     return p::make_tuple(dataarr,rowsplits);
-//BOOST REPLACE }
-//BOOST REPLACE
-//BOOST REPLACE //cpoies data
-//BOOST REPLACE template<class T>
-//BOOST REPLACE boost::python::tuple simpleArray<T>::copyToNumpy(bool pad_rowsplits)const{
-//BOOST REPLACE
-//BOOST REPLACE     namespace p = boost::python;
-//BOOST REPLACE     namespace np = boost::python::numpy;
-//BOOST REPLACE
-//BOOST REPLACE     auto shape = makeNumpyShape();
-//BOOST REPLACE     T * data_ptr = data();
-//BOOST REPLACE
-//BOOST REPLACE     np::ndarray dataarr = STLToNumpy<T>(data_ptr, shape, size(), true);
-//BOOST REPLACE     if(pad_rowsplits){
-//BOOST REPLACE         auto rsp = padRowsplits();
-//BOOST REPLACE         np::ndarray rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
-//BOOST REPLACE         return p::make_tuple(dataarr,rowsplits);
-//BOOST REPLACE     }
-//BOOST REPLACE     np::ndarray rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size()}, rowsplits_.size(), true);
-//BOOST REPLACE     return p::make_tuple(dataarr,rowsplits);
-//BOOST REPLACE
-//BOOST REPLACE }
+template<class T>
+py::tuple simpleArray<T>::transferToNumpy(bool pad_rowsplits){
+
+    auto shape = makeNumpyShape();
+    T * data_ptr = data(); // disownData(); //FIXME. Check pybind11 if it can be used to transfer mem ownership
+
+    auto dataarr = STLToNumpy<T>(data_ptr, shape, size(), false);//false doesn't do anythin atm
+    if(pad_rowsplits){
+        auto rsp = padRowsplits();
+        auto rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
+        clear();
+        return py::make_tuple(dataarr,rowsplits);
+    }
+    //don't check. if rowsplits_.size()==0 function will return empty array and igonre invalid pointer
+    auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size()}, rowsplits_.size(), true);
+    clear();//reset all
+    return py::make_tuple(dataarr,rowsplits);
+}
+
+//cpoies data
+template<class T>
+py::tuple simpleArray<T>::copyToNumpy(bool pad_rowsplits)const{
+
+    auto shape = makeNumpyShape();
+    T * data_ptr = data();
+
+    auto dataarr = STLToNumpy<T>(data_ptr, shape, size(), true);
+    if(pad_rowsplits){
+        auto rsp = padRowsplits();
+        auto rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
+        return py::make_tuple(dataarr,rowsplits);
+    }
+    auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size()}, rowsplits_.size(), true);
+    return py::make_tuple(dataarr,rowsplits);
+
+ }
 //BOOST REPLACE
 //BOOST REPLACE template<class T>
 //BOOST REPLACE void simpleArray<T>::setFeatureNamesPy(boost::python::list l){

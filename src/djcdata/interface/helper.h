@@ -14,8 +14,13 @@
 #include <string>
 
 
+#include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
+
 #include <algorithm>
 #include <random>
+
+namespace py=pybind11;
 
 template <class T>
 std::vector<T> GenerateRandomVector(int NumberCount,T minimum=0, T maximum=1) {
@@ -39,6 +44,19 @@ std::ostream& operator<<(std::ostream& output, std::vector<T> const& values)
     output << std::endl;
     return output;
 }
+
+template<class T>
+py::array_t<T, py::array::c_style> STLToNumpy(const T * data, const std::vector<int>& shape, const size_t& size, bool copy=true);
+
+template<class T>
+py::array_t<T, py::array::c_style> STLToNumpy(const T * data, const std::vector<int>& shape, const size_t& size, bool copy){
+
+    //this seems to always copy
+    py::array_t<T, py::array::c_style> arr(shape, data);
+    return arr;
+
+}
+
 
 
 
