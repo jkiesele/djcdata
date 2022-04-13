@@ -7,7 +7,6 @@ __pycache__
 *.out
 *.err
 *.list
-*.txt
 *.pdf
 *.png
 *.eps
