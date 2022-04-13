@@ -141,7 +141,7 @@ class TestTrainDataGenerator(unittest.TestCase):
         shutil.rmtree(dcoutdir.path)
         self.assertTrue(passed)
         
-    def no_test_fullGeneratorDict(self):
+    def test_fullGeneratorDict(self):
         print("TestTrainDataGenerator full generator with dictionary")
         
         passed = True

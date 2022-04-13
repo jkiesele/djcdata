@@ -465,10 +465,10 @@ class DataCollection(object):
         tempstoragepath='/dev/shm/'+thispid
         
         logger.info('creating dir '+tempstoragepath)
-        os.system('mkdir -p '+tempstoragepath)
         
-        
-            
+        if not self.no_copy_on_convert:
+            os.system('mkdir -p '+tempstoragepath)
+                
         processes=[]
         processrunning=[]
         processfinished=[]
