@@ -80,4 +80,5 @@ setup(
     ext_modules=[CMakeExtension('djcdata/compiled')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
+    install_requires=['numpy']
 )
