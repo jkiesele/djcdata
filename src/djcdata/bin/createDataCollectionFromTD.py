@@ -2,8 +2,8 @@
 # encoding: utf-8
 
 
-from . import DataCollection, TrainData
-from .conversion import class_options
+from djcdata import DataCollection, TrainData
+from djcdata.conversion import class_options
 from argparse import ArgumentParser
 import os
 

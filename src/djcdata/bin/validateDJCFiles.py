@@ -3,7 +3,7 @@
 
 from argparse import ArgumentParser
 import os
-from .conversion import class_options
+from djcdata.conversion import class_options
 try: #don't require package for this little script
     import tqdm
 except: #just fake it

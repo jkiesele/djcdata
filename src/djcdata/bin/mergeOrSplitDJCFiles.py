@@ -15,8 +15,8 @@ parser.add_argument("--randomise", help="randomise order, could be helpful if di
 args=parser.parse_args()
 
 
-from . import DataCollection
-from .dataPipeline import TrainDataGenerator
+from djcdata import DataCollection
+from djcdata.dataPipeline import TrainDataGenerator
 
 infile=args.infile
 nbatch=int(args.nelementsperfile)

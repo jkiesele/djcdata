@@ -16,8 +16,8 @@ import logging
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s: %(message)s')
 logging.getLogger().setLevel(logging.INFO)
 
-from . import DataCollection
-from .conversion import class_options
+from djcdata import DataCollection
+from djcdata.conversion import class_options
 
 parser = ArgumentParser('program to convert source files to traindata format')
 parser.add_argument("-i", help="input file list (required)", metavar="FILE", default='')

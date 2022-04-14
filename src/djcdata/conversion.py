@@ -3,7 +3,8 @@ try:
     from datastructures import *
 except ImportError:
     print('datastructure modules not found. Please define TrainData definitions in a datastructures module in your python path')
-
+    exit()
+    
 class_options=[]
 import inspect, sys
 for name, obj in inspect.getmembers(sys.modules['datastructures']):

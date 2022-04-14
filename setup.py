@@ -66,7 +66,9 @@ class CMakeBuild(build_ext):
                               cwd=self.build_temp)
         print()  # Add an empty line for cleaner output
         
-             
+import glob
+bins = glob.glob('src/djcdata/bin/*py')        
+print(bins)     
 setup(
     name='djcdata',
     version='2.1', #start from deepjetcore included version
@@ -80,5 +82,6 @@ setup(
     ext_modules=[CMakeExtension('djcdata/compiled')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    install_requires=['numpy']
+    install_requires=['numpy'],
+    scripts=bins
 )
