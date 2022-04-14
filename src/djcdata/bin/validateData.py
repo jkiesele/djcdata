@@ -9,7 +9,7 @@ parser.add_argument('--remove',default="")
 parser.add_argument('--skip_first',default=0)
 args=parser.parse_args()
 
-from DeepJetCore.DataCollection import DataCollection
+from . import DataCollection
 
 dc=DataCollection(args.inputDataCollection)
 dc.writeToFile(args.inputDataCollection+".backup")

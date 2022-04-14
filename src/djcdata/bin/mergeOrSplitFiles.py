@@ -15,8 +15,8 @@ parser.add_argument("--randomise", help="randomise order, could be helpful if di
 args=parser.parse_args()
 
 
-from DeepJetCore.DataCollection import DataCollection
-from DeepJetCore.dataPipeline import TrainDataGenerator
+from . import DataCollection
+from .dataPipeline import TrainDataGenerator
 
 infile=args.infile
 nbatch=int(args.nelementsperfile)

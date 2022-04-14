@@ -1,6 +1,17 @@
 
 from .compiled import trainDataGenerator
+from . import DataCollection
 import numpy as np
+
+def invokeGeneratorFromDataCollection(file, 
+                                      batch_size,
+                                      **kwargs):
+    dc = DataCollection(file)
+    dc.setBatchSize(batch_size)
+    gen = dc.invokeGenerator(**kwargs)
+    return gen
+    
+    
 
 class TrainDataGenerator(trainDataGenerator):
     
@@ -74,5 +85,4 @@ class TrainDataGenerator(trainDataGenerator):
                 print("TrainDataGenerator: an exception was raised in batch",b," out of ", self.getNBatches(),', expection: ', e)
                 raise e
             
-    def feedTorchTensors(self):
-        pass
+    

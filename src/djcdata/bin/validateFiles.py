@@ -3,8 +3,14 @@
 
 from argparse import ArgumentParser
 import os
-from DeepJetCore.conversion.conversion import class_options
-import tqdm
+from .conversion import class_options
+try: #don't require package for this little script
+    import tqdm
+except: #just fake it
+    class tqdm(object):
+        @staticmethod
+        def tqdm(l):
+            return l
 
 parser = ArgumentParser('Check if all files in a file list and remove broken entries\n')
 parser.add_argument('inputFileList')

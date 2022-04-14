@@ -2,9 +2,8 @@
 # encoding: utf-8
 
 
-from DeepJetCore.DataCollection import DataCollection
-from DeepJetCore.conversion.conversion import class_options
-from DeepJetCore.TrainData import TrainData
+from . import DataCollection, TrainData
+from .conversion import class_options
 from argparse import ArgumentParser
 import os
 
