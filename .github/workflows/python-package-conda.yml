@@ -16,4 +16,4 @@ jobs:
         python-version: 3.9
     - name: Test cmake
       run: |
-        which cmake
+        cmake --version
