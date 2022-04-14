@@ -125,7 +125,7 @@ size_t quicklz<T>::readCompressedBlock(FILE *& ifile, T * arr){
         //std::cout << "decompress success " << readbytes << " allread " << allread << std::endl;
         chunk++;
         dst += readbytes;
-        delete src;
+        delete[] src;
     }
     if (allread != totalbytes_) {
         std::string moreinfo = "\nexpected: ";
@@ -202,7 +202,7 @@ void quicklz<T>::writeCompressed(const T * arr, size_t size, FILE *& ofile) {
     io::writeToFile(dst, ofile, 0, len2);
 
     //end
-    delete dst;
+    delete[] dst;
 }
 
 }//namespace
