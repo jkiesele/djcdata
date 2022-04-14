@@ -14,8 +14,13 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.9
-    - name: Test cmake
+    - name: Check cmake
       run: |
         cmake --version
-        ls
-        pwd
+    - name: run install
+      run: |
+        python3 setup.py install
+    - name: run unit tests
+      run: |
+        cd test
+        python3 test.py
