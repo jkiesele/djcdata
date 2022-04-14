@@ -17,4 +17,4 @@ cmake_print_variables(SOURCES)
 
 # do this later
 add_subdirectory(lib/pybind11)
-pybind11_add_module(compiled ${SOURCES} "${SOURCE_DIR}/bindings.cpp")
+pybind11_add_module(compiled ${SOURCES} "${SOURCE_DIR}/bind/bindings.cpp")
