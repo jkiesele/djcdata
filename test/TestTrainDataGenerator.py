@@ -71,6 +71,9 @@ class TempDirName(object):
 raggedtester=RaggedTester()
 
 class TrainData_test(TrainData):
+    def __init__(self,nsamples=[12,101]):
+        super(TrainData_test,self).__init__()
+        self.nsamples = nsamples
     
     def convertFromSourceFile(self, filename, weighterobjects, istraining):
         global raggedtester
@@ -80,7 +83,7 @@ class TrainData_test(TrainData):
         
         seed = int(hashlib.sha1(filename.encode('utf-8')).hexdigest(), 16) % (10 ** 8)
         np.random.seed(seed)
-        nsamples = np.random.randint(12,101,size=1)
+        nsamples = np.random.randint(self.nsamples[0],self.nsamples[1],size=1)
         data,rs = raggedtester.createData(nsamples)
         
         farr = SimpleArray(data, rs,name="features_ragged")

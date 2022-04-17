@@ -10,11 +10,10 @@ include_directories(${SOURCE_DIR}/../interface)
 
 file(GLOB_RECURSE SOURCES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.c")
 
-cmake_print_variables(SOURCES)
-
-# DEBUG just for compile testing
-# set(SOURCES "${SOURCE_DIR}/test.cpp")
-
-# do this later
 add_subdirectory(lib/pybind11)
 pybind11_add_module(compiled ${SOURCES} "${SOURCE_DIR}/bind/bindings.cpp")
+
+#shared lib lib
+include_directories(lib/pybind11/include)
+# add python etc to be added, also copying includes etc
+# add_library(djcdata SHARED ${SOURCES})
