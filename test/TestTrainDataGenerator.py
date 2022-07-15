@@ -29,6 +29,7 @@ class RaggedTester(object):
         return np.concatenate(data), np.array(row_splits,dtype='int64')
 
     def checkData(self,data,rs,dtype='float32'):
+        rs = rs[:,0]#djc format
         for i in range(len(rs)-1):
             ea=data[rs[i]:rs[i+1]]
             if not self.checkEvent(ea,dtype):
@@ -134,7 +135,7 @@ class TestTrainDataGenerator(unittest.TestCase):
                     print('epoch',epoch, 'batch',b,'broken')
                     passed=False
                     break
-                if rs[-1] > n_per_batch:
+                if rs[-1,0] > n_per_batch:
                     print('maximum batch size exceeded for batch ',b, 'epoch', epoch)
                     passed = False
                     break

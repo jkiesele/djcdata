@@ -20,6 +20,7 @@ class TestSimpleArray(unittest.TestCase):
         a.createFromNumpy(arr,rs)
         
         narr, nrs = a.copyToNumpy()
+        nrs=nrs[:,0]
 
         diff = np.max(np.abs(narr-arr))
         diff += np.max(np.abs(nrs-rs))
@@ -30,6 +31,8 @@ class TestSimpleArray(unittest.TestCase):
         arr,rs = self.createNumpy('float32')
         a = SimpleArray(arr,rs)
         narr, nrs = a.transferToNumpy()
+        nrs=nrs[:,0]
+        
         diff = np.max(np.abs(narr-arr))
         diff += np.max(np.abs(nrs-rs))
         self.assertTrue(diff< 0.000001)
@@ -40,6 +43,8 @@ class TestSimpleArray(unittest.TestCase):
         arr,rs = self.createNumpy('int32')
         a = SimpleArray(arr,rs)
         narr, nrs = a.transferToNumpy()
+        nrs=nrs[:,0]
+        
         diff = np.max(np.abs(narr-arr))
         diff += np.max(np.abs(nrs-rs))
         self.assertTrue(diff< 0.000001)
@@ -53,6 +58,8 @@ class TestSimpleArray(unittest.TestCase):
         a.createFromNumpy(arr,rs)
         
         narr, nrs = a.copyToNumpy()
+        nrs=nrs[:,0]
+        
         diff = np.max(np.abs(narr-arr))
         diff += np.max(np.abs(nrs-rs))
         self.assertTrue(diff< 0.000001)
