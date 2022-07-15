@@ -1271,7 +1271,7 @@ py::tuple simpleArray<T>::transferToNumpy(bool pad_rowsplits){
         return py::make_tuple(dataarr,rowsplits);
     }
     //don't check. if rowsplits_.size()==0 function will return empty array and igonre invalid pointer
-    auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size()}, rowsplits_.size(), true);
+    auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size(),1}, rowsplits_.size(), true);
     clear();//reset all
     return py::make_tuple(dataarr,rowsplits);
 }
@@ -1289,7 +1289,7 @@ py::tuple simpleArray<T>::copyToNumpy(bool pad_rowsplits)const{
         auto rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
         return py::make_tuple(dataarr,rowsplits);
     }
-    auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size()}, rowsplits_.size(), true);
+    auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size(),1}, rowsplits_.size(), true);
     return py::make_tuple(dataarr,rowsplits);
 
  }
