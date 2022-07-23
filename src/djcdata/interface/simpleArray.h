@@ -28,8 +28,6 @@
 
 namespace djc{
 
-namespace py=pybind11;
-
 //has all non-data operations
 class simpleArrayBase {
 public:
@@ -83,7 +81,7 @@ public:
 
     virtual bool hasNanOrInf()const=0;
 
-    py::list shapePy()const;
+    pybind11::list shapePy()const;
 
     const size_t& size() const {
         return size_;
@@ -165,7 +163,7 @@ public:
     static std::vector<int64_t> splitRowSplits(std::vector<int64_t> & rowsplits, const size_t& splitpoint);
 
 
-    virtual py::tuple transferToNumpy(bool pad_rowsplits=false)=0;
+    virtual pybind11::tuple transferToNumpy(bool pad_rowsplits=false)=0;
 
     int isize() const {
         return (int)size_;
@@ -206,8 +204,8 @@ template<class T>
 class simpleArray: public simpleArrayBase { //inherits and implements data operations
 public:
 
-    typedef py::array_t<T, py::array::c_style | py::array::forcecast> nparrT;
-    typedef py::array_t<int64_t, py::array::c_style | py::array::forcecast> nparr64;
+    typedef pybind11::array_t<T, pybind11::array::c_style | pybind11::array::forcecast> nparrT;
+    typedef pybind11::array_t<int64_t, pybind11::array::c_style | pybind11::array::forcecast> nparr64;
 
     simpleArray();
     // row splits are indicated by a merged dimension with negative sign
@@ -361,10 +359,10 @@ public:
     void createFromNumpy(const nparrT& ndarr, const nparr64& rowsplits=nparr64());
 
     //transfers data ownership and cleans simpleArray instance
-    py::tuple transferToNumpy(bool pad_rowsplits=false);
+    pybind11::tuple transferToNumpy(bool pad_rowsplits=false);
 
     //copy data
-    py::tuple copyToNumpy(bool pad_rowsplits=false)const;
+    pybind11::tuple copyToNumpy(bool pad_rowsplits=false)const;
 
 
 
@@ -1190,8 +1188,8 @@ void simpleArray<T>::checkArray(const nparrT& ndarr)const{
      clear();
      checkArray(ndarr);
 
-     py::buffer_info nparrbuf = ndarr.request();
-     py::buffer_info rsbuf = rowsplits.request();
+     pybind11::buffer_info nparrbuf = ndarr.request();
+     pybind11::buffer_info rsbuf = rowsplits.request();
 
      T * npdata = (T*)(void*) nparrbuf.ptr;
      data_ = npdata;
@@ -1257,7 +1255,7 @@ std::vector<int64_t> simpleArray<T>::padRowsplits()const{ //rs 0, 1, 1 element
 
 //transfers data ownership and cleans simpleArray instance
 template<class T>
-py::tuple simpleArray<T>::transferToNumpy(bool pad_rowsplits){
+pybind11::tuple simpleArray<T>::transferToNumpy(bool pad_rowsplits){
 
     auto shape = makeNumpyShape();
     T * data_ptr = data(); // disownData(); //FIXME. Check pybind11 if it can be used to transfer mem ownership
@@ -1268,17 +1266,17 @@ py::tuple simpleArray<T>::transferToNumpy(bool pad_rowsplits){
         auto rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
 
         clear();
-        return py::make_tuple(dataarr,rowsplits);
+        return pybind11::make_tuple(dataarr,rowsplits);
     }
     //don't check. if rowsplits_.size()==0 function will return empty array and igonre invalid pointer
     auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size(),1}, rowsplits_.size(), true);
     clear();//reset all
-    return py::make_tuple(dataarr,rowsplits);
+    return pybind11::make_tuple(dataarr,rowsplits);
 }
 
 //cpoies data
 template<class T>
-py::tuple simpleArray<T>::copyToNumpy(bool pad_rowsplits)const{
+pybind11::tuple simpleArray<T>::copyToNumpy(bool pad_rowsplits)const{
 
     auto shape = makeNumpyShape();
     T * data_ptr = data();
@@ -1287,10 +1285,10 @@ py::tuple simpleArray<T>::copyToNumpy(bool pad_rowsplits)const{
     if(pad_rowsplits){
         auto rsp = padRowsplits();
         auto rowsplits = STLToNumpy<int64_t>(&(rsp[0]), {(int)rsp.size()}, rsp.size(), true);
-        return py::make_tuple(dataarr,rowsplits);
+        return pybind11::make_tuple(dataarr,rowsplits);
     }
     auto rowsplits = STLToNumpy<int64_t>(&(rowsplits_[0]), {(int)rowsplits_.size(),1}, rowsplits_.size(), true);
-    return py::make_tuple(dataarr,rowsplits);
+    return pybind11::make_tuple(dataarr,rowsplits);
 
  }
 

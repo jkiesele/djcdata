@@ -23,8 +23,6 @@
 
 namespace djc{
 
-namespace py=pybind11;
-
 /*
  * use small helper class to store simpleArrayBase pointers
  * and manage ownership where needed.
@@ -241,47 +239,47 @@ public:
 
 
 
-     inline py::list getNumpyFeatureShapes()const{
+     inline pybind11::list getNumpyFeatureShapes()const{
          return transferShapesToPyList(feature_shapes_);
      }
-     inline py::list getNumpyTruthShapes()const{
+     inline pybind11::list getNumpyTruthShapes()const{
          return transferShapesToPyList(truth_shapes_);
      }
-     inline py::list getNumpyWeightShapes()const{
+     inline pybind11::list getNumpyWeightShapes()const{
          return transferShapesToPyList(weight_shapes_);
      }
 
-     inline py::list getNumpyFeatureDTypes()const{
+     inline pybind11::list getNumpyFeatureDTypes()const{
          return transferDTypesToPyList(feature_arrays_);
      }
-     inline py::list getNumpyTruthDTypes()const{
+     inline pybind11::list getNumpyTruthDTypes()const{
          return transferDTypesToPyList(truth_arrays_);
      }
-     inline py::list getNumpyWeightDTypes()const{
+     inline pybind11::list getNumpyWeightDTypes()const{
          return transferDTypesToPyList(weight_arrays_);
      }
 
-     inline py::list getNumpyFeatureArrayNames()const{
+     inline pybind11::list getNumpyFeatureArrayNames()const{
          return transferNamesToPyList(feature_arrays_);
      }
-     inline py::list getNumpyTruthArrayNames()const{
+     inline pybind11::list getNumpyTruthArrayNames()const{
          return transferNamesToPyList(truth_arrays_);
      }
-     inline py::list getNumpyWeightArrayNames()const{
+     inline pybind11::list getNumpyWeightArrayNames()const{
          return transferNamesToPyList(weight_arrays_);
      }
 
      //has ragged support
-     py::list transferFeatureListToNumpy(bool padrowsplits=false);
+     pybind11::list transferFeatureListToNumpy(bool padrowsplits=false);
 
      //has ragged support
-     py::list transferTruthListToNumpy(bool padrowsplits=false);
+     pybind11::list transferTruthListToNumpy(bool padrowsplits=false);
 
      //no ragged support
-     py::list transferWeightListToNumpy(bool padrowsplits=false);
+     pybind11::list transferWeightListToNumpy(bool padrowsplits=false);
 
 
-     py::list getTruthRaggedFlags()const;
+     pybind11::list getTruthRaggedFlags()const;
 
      /*
       * the following ones can be improved w.r.t. performance
@@ -289,19 +287,19 @@ public:
 
 
      //has ragged support
-     py::list copyFeatureListToNumpy(bool padrowsplits=false){
+     pybind11::list copyFeatureListToNumpy(bool padrowsplits=false){
          auto td = *this;
          return td.transferFeatureListToNumpy(padrowsplits); //fast hack
      }
 
      //has ragged support
-     py::list copyTruthListToNumpy(bool padrowsplits=false){
+     pybind11::list copyTruthListToNumpy(bool padrowsplits=false){
          auto td = *this;
          return td.transferTruthListToNumpy(padrowsplits); //fast hack
      }
 
      //no ragged support
-     py::list copyWeightListToNumpy(bool padrowsplits=false){
+     pybind11::list copyWeightListToNumpy(bool padrowsplits=false){
          auto td = *this;
          return td.transferWeightListToNumpy(padrowsplits); //fast hack
      }
@@ -328,9 +326,9 @@ private:
 
     void updateShapes();
 
-    py::list transferNamesToPyList(const typeContainer&)const;
-    py::list transferShapesToPyList(const std::vector<std::vector<int> >&)const;
-    py::list transferDTypesToPyList(const typeContainer&)const;
+    pybind11::list transferNamesToPyList(const typeContainer&)const;
+    pybind11::list transferShapesToPyList(const std::vector<std::vector<int> >&)const;
+    pybind11::list transferDTypesToPyList(const typeContainer&)const;
 
 
     typeContainer feature_arrays_;
@@ -342,7 +340,7 @@ private:
     std::vector<std::vector<int> > weight_shapes_;
 
 
-    py::list transferToNumpyList(typeContainer& , bool pad_rowsplits);
+    pybind11::list transferToNumpyList(typeContainer& , bool pad_rowsplits);
 
 
 };
