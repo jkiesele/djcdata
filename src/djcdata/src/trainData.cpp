@@ -1,6 +1,8 @@
 #include "../interface/trainData.h"
 
 
+namespace py=pybind11;
+
 namespace djc{
 
 /*

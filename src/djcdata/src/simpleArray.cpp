@@ -1,6 +1,7 @@
 #include "../interface/simpleArray.h"
 #include <vector>
 
+namespace py=pybind11;
 
 namespace djc{
 /**
