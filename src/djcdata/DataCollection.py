@@ -316,7 +316,7 @@ class DataCollection(object):
         return out
         
     
-    def recoverCreateDataFromRootFromSnapshot(self, snapshotfile):
+    def recoverCreateDataFromSourceFromSnapshot(self, snapshotfile):
         snapshotfile=os.path.abspath(snapshotfile)
         self.readFromFile(snapshotfile)
 
@@ -338,7 +338,7 @@ class DataCollection(object):
     def getAllWeights(self,nfiles=-1):
         return self.extract_features(self.dataclass,'w',nfiles)
         
-    def createDataFromRoot(
+    def createDataFromSource(
                     self, dataclass, outputDir, 
                     redo_meansandweights=True, means_only=False, dir_check=True
                     ):
@@ -351,8 +351,8 @@ class DataCollection(object):
         '''
         
         if len(self.sourceList) < 1:
-            print('createDataFromRoot: no input root file')
-            raise Exception('createDataFromRoot: no input root file')
+            print('createDataFromSource: no input root file')
+            raise Exception('createDataFromSource: no input root file')
         
         outputDir+='/'
         if os.path.isdir(outputDir) and dir_check:
@@ -539,7 +539,7 @@ class DataCollection(object):
             raise 
         os.system('rm -rf '+tempstoragepath)
         
-    def convertListOfRootFiles(self, inputfile, dataclass, outputDir, 
+    def convertListOfSourceFiles(self, inputfile, dataclass, outputDir, 
             takeweightersfrom='', means_only=False,
             output_name='dataCollection.djcdc',
             relpath='', checkfiles=False):
@@ -550,7 +550,7 @@ class DataCollection(object):
             newmeans=False
         self.dataclass = dataclass
         self.readSourceListFromFile(inputfile, relpath=relpath,checkfiles=checkfiles)
-        self.createDataFromRoot(
+        self.createDataFromSource(
                     dataclass, outputDir, 
                     newmeans, means_only = means_only, 
                     dir_check= not self.batch_mode

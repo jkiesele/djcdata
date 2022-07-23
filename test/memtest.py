@@ -26,7 +26,7 @@ def mem_test():
     dc.dataclass = TrainData_test
     dc.sourceList = [f for f in files.filenames]
     dc.no_copy_on_convert=True #no shm write
-    dc.createDataFromRoot(TrainData_test, outputDir=dcoutdir.path)
+    dc.createDataFromSource(TrainData_test, outputDir=dcoutdir.path)
     
     gen = dc.invokeGenerator()
     gen.setBatchSize(n_per_batch)

@@ -118,9 +118,9 @@ elif not recover:
     raise Exception('wrong class selection')
 
 if recover:
-    dc.recoverCreateDataFromRootFromSnapshot(recover)        
+    dc.recoverCreateDataFromSourceFromSnapshot(recover)        
 elif args.means:
-    dc.convertListOfRootFiles(
+    dc.convertListOfSourceFiles(
         infile, traind, outPath,
         means_only=True,
         output_name='batch_template.djcdc',
@@ -129,7 +129,7 @@ elif args.means:
     )
 else:
     logging.info('Start conversion')
-    dc.convertListOfRootFiles(
+    dc.convertListOfSourceFiles(
         infile, traind, outPath, 
         takeweightersfrom=useweightersfrom,
         output_name=(args.batch if args.batch else 'dataCollection.djcdc'),
