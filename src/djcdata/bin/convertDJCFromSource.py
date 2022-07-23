@@ -61,6 +61,10 @@ nchilds=args.n
 dofilecheck=args.checkFiles
 testdata = args.testdata
 
+if args.gpu:
+    if (len(nchilds) and int(nchilds)>1) and (not args.nothreads):
+        print("WARNING: enabling gpu for conversion and processing multiple files in parallel could be an issue!")
+
 #fileIsValid
 
 if args.batch:

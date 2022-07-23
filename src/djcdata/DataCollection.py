@@ -366,7 +366,7 @@ class DataCollection(object):
         self.dataclass_instance=None
         self.weighterobjects = td.createWeighterObjects(self.sourceList)
 
-        if self.batch_mode:
+        if self.batch_mode or self.nprocs==1:
             for sample in self.sourceList:
                 self.__writeData(sample, outputDir)
         else:
