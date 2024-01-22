@@ -47,7 +47,7 @@ if args.gpu:
     import setGPU
     
 from djcdata import DataCollection, TrainData
-from djcdata.conversion.conversion import class_options
+from djcdata.conversion import class_options
     
 infile=args.i
 outPath=args.o
