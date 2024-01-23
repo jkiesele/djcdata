@@ -6,6 +6,7 @@ Created on 21 Feb 2017
 
 
 from . import TrainData
+from .compiled import trainDataGenerator
 from .dataPipeline import TrainDataGenerator
 import tempfile
 import pickle
@@ -375,8 +376,6 @@ class DataCollection(object):
     def __writeData(self, sample, outputDir):
         sw=stopwatch()
         td=self.dataclass()
-        
-        fileTimeOut(sample,120) #once available copy to ram
 
         sbasename = os.path.basename(sample)
         newname = sbasename[:sbasename.rfind('.')]+'.djctd'
@@ -391,7 +390,7 @@ class DataCollection(object):
         if not self.batch_mode:
             self.writeToFile(outputDir+'/snapshot.djcdc')
             
-    def _writeData_async(self,index,woq,wrlck,outputDir):
+    def _writeData_async(self,index,woq,wrlck,outputDir,tempstoragepath):
 
         logger.info('async started')
         
@@ -473,7 +472,7 @@ class DataCollection(object):
         processrunning=[]
         processfinished=[]
         for i in range(startindex,len(self.sourceList)):
-            processes.append(Process(target=self._writeData_async, args=(i,wo_queue,writelock, outputDir) ) )
+            processes.append(Process(target=self._writeData_async, args=(i,wo_queue,writelock, outputDir, tempstoragepath) ) )
             processrunning.append(False)
             processfinished.append(False)
         
