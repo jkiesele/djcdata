@@ -3,7 +3,7 @@ name: Run tests
 on: [push]
 
 jobs:
-  build-linux:
+  py_three_nine:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
@@ -17,6 +17,31 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.9
+    - name: Check cmake
+      run: |
+        cmake --version
+    - name: run install
+      run: |
+        python3 setup.py install
+    - name: run unit tests
+      run: |
+        cd test
+        python3 runtests.py
+
+  py_three_eleven:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.11
     - name: Check cmake
       run: |
         cmake --version
