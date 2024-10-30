@@ -191,3 +191,7 @@ class TestTrainDataGenerator(unittest.TestCase):
             
         shutil.rmtree(dcoutdir.path)
         self.assertTrue(passed)
+
+
+if __name__ == "__main__":
+    unittest.main()

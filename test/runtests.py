@@ -2,6 +2,7 @@ from TestSimpleArray import TestSimpleArray
 from TestTrainData import TestTrainData
 from TestCompatibility import TestCompatibility
 from TestTrainDataGenerator import TestTrainDataGenerator
+from TestDJCDataLoader import TestDJCDataLoader
 #from TestCFunctions import TestCFunctions
 
 from multiprocessing import freeze_support

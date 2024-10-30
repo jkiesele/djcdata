@@ -84,6 +84,10 @@ public:
 
     int getNBatches()const{return nbatches_;}
 
+    int getNProcessed()const{return nsamplesprocessed_;}
+
+    int getBatchSize()const{return batchsize_;}
+
     bool lastBatch()const;
 
     bool isEmpty()const;

@@ -1,0 +1,1 @@
+pip3 install -v --no-deps --no-build-isolation .

@@ -23,6 +23,9 @@ jobs:
     - name: run install
       run: |
         python3 setup.py install
+    - name: install torch for testing only
+      run: |
+        pip3 install torch
     - name: run unit tests
       run: |
         cd test
@@ -48,6 +51,9 @@ jobs:
     - name: run install
       run: |
         python3 setup.py install
+    - name: install torch for testing only
+      run: |
+        pip3 install torch
     - name: run unit tests
       run: |
         cd test

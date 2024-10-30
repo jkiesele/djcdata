@@ -177,6 +177,9 @@ void makeTDG(M & m, std::string name){
            .def("clear", &trainDataGenerator::clear)
            .def("getNBatches", &trainDataGenerator::getNBatches)
 
+           .def("getNProcessed", &trainDataGenerator::getNProcessed)
+           .def("getBatchSize", &trainDataGenerator::getBatchSize)
+
            .def("lastBatch", &trainDataGenerator::lastBatch)
            .def("isEmpty", &trainDataGenerator::isEmpty)
 
