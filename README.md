@@ -265,7 +265,4 @@ For datasets with variable-length sequences, wrap your data arrays in `SimpleArr
 
 `djcdata` utilizes multiprocessing to speed up data conversion and loading. The data generators and loaders handle shuffling, batching, and device transfers to optimize training performance.
 
-## License
-
-`djcdata` is distributed under the [MIT License](https://opensource.org/licenses/MIT).
 
