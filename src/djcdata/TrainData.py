@@ -138,7 +138,7 @@ class TrainData_mock(TrainData):
         rs = [0]
         for i in range(nsamples[0]):
             n = np.random.randint(20,100)
-            data.append(np.random.normal(size=(n,4)))
+            data.append(np.random.normal(size=(n,10)))
             rs.append(n + rs[-1])
 
         # make them numpy arrays
