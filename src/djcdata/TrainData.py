@@ -122,7 +122,7 @@ class TrainData(trainData):
 
 
 class TrainData_mock(TrainData):
-    def __init__(self,nsamples=[12,101]):
+    def __init__(self,nsamples=[200,500]):
         super(TrainData_mock,self).__init__()
         self.nsamples = nsamples
     
