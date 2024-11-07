@@ -82,9 +82,9 @@ class TrainDataGenerator(trainDataGenerator):
                     out = (xout,yout,wout)
                 yield out
             except Exception as e:
-                print("TrainDataGenerator: an exception was raised in batch",b," out of ", self.getNBatches(),', expection: ', e)
+                print("TrainDataGenerator: an exception was raised in batch",b," out of ", self.getNBatches(),', expection: ', e, 'this can happen if the file list is shuffled but prepareNextEpoch was not called')
                 raise e
-        # Explicitly raise StopIteration after all batches are yielded
-        raise StopIteration
+        # Exhaust without explicit StopIteration
+        
             
     
