@@ -6,6 +6,10 @@ except ImportError:
 
 from . import DataCollection  # Adjust the import as needed
 
+# just for the mock class
+import tempfile
+import shutil
+
 class DJCDataLoader:
     def __init__(self, 
                  data_path, 
@@ -135,4 +139,41 @@ class DJCDataLoader:
 
         return val_loader
 
+
+
+
+# a mock trainData class for testing
+class MockDJCDataLoader(DJCDataLoader):
+    """
+    A mock DJCDataLoader class that can be used for testing.
+    It does not require a data_path and does not load any data.
+    """
+    def __init__(self, 
+                 batch_size=32, 
+                 shuffle=True, 
+                 device=None, 
+                 dict_output=False,
+                 **kwargs):
+        
+        from djcdata.TrainData import TrainData_mock
+        
+        mock_filenames = [f"mock_file_{i}.input" for i in range(10)]
+
+        # create a temporary output directory
+        self.temp_dir = tempfile.mkdtemp()
+        shutil.rmtree(self.temp_dir) # will be recreated by conversion
+
+        dc = DataCollection()
+        dc.dataclass = TrainData_mock
+        dc.sourceList = mock_filenames
+        dc.no_copy_on_convert=True #no shm write
+        
+        dc.createDataFromSource(TrainData_mock, outputDir=self.temp_dir)
+        
+        dc_path = f"{self.temp_dir}/snapshot.djcdc"
+
+        super().__init__(dc_path, batch_size, shuffle, device, dict_output, **kwargs)
+
+    def __del__(self): #clean up
+        shutil.rmtree(self.temp_dir)
 

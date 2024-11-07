@@ -11,7 +11,7 @@ import numpy as np
 import logging
 
 from .compiled import trainData
-from . import SimpleArray
+from .SimpleArray import SimpleArray
 import time
 
 def fileTimeOut(fileName, timeOut):
@@ -119,3 +119,36 @@ class TrainData(trainData):
     def writeOutPrediction(self, predicted, features, truth, weights, outfilename, inputfile):
         return None
 
+
+
+class TrainData_mock(TrainData):
+    def __init__(self,nsamples=[12,101]):
+        super(TrainData_mock,self).__init__()
+        self.nsamples = nsamples
+    
+    def convertFromSourceFile(self, filename, weighterobjects, istraining):
+        
+        import hashlib     
+        print('creating mock...',filename) 
+        
+        seed = int(hashlib.sha1(filename.encode('utf-8')).hexdigest(), 16) % (10 ** 8)
+        np.random.seed(seed)
+        nsamples = np.random.randint(self.nsamples[0],self.nsamples[1],size=1)
+        data = []
+        rs = [0]
+        for i in range(nsamples[0]):
+            n = np.random.randint(20,100)
+            data.append(np.random.normal(size=(n,4)))
+            rs.append(n + rs[-1])
+
+        # make them numpy arrays
+        data = np.concatenate(data, axis=0)
+        #make dtype float32
+        data = np.array(data,dtype='float32')
+        rs = np.array(rs)
+
+        farr = SimpleArray(data, rs,name="features_ragged")
+        true_arr = SimpleArray(data, rs,name="truth_ragged")
+        farrint = SimpleArray(np.array(data,dtype='int32'), rs, name="features_int_ragged")
+        
+        return [farr,farrint],[true_arr],[]
