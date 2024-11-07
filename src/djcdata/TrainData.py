@@ -122,9 +122,11 @@ class TrainData(trainData):
 
 
 class TrainData_mock(TrainData):
-    def __init__(self,nsamples=[200,500]):
+    def __init__(self,nsamples=[200,500], n_features=10, n_truth=1):
         super(TrainData_mock,self).__init__()
         self.nsamples = nsamples
+        self.n_features = n_features
+        self.n_truth = n_truth
     
     def convertFromSourceFile(self, filename, weighterobjects, istraining):
         
@@ -135,20 +137,25 @@ class TrainData_mock(TrainData):
         np.random.seed(seed)
         nsamples = np.random.randint(self.nsamples[0],self.nsamples[1],size=1)
         data = []
+        truth = []
         rs = [0]
         for i in range(nsamples[0]):
             n = np.random.randint(20,100)
-            data.append(np.random.normal(size=(n,10)))
+            data.append(np.random.normal(size=(n,self.n_features)))
+            truth.append(np.random.normal(size=(n,self.n_truth)))
             rs.append(n + rs[-1])
 
         # make them numpy arrays
         data = np.concatenate(data, axis=0)
         #make dtype float32
         data = np.array(data,dtype='float32')
+        truth = np.concatenate(truth, axis=0)
+        truth = np.array(truth,dtype='float32')
+
         rs = np.array(rs)
 
         farr = SimpleArray(data, rs,name="features_ragged")
-        true_arr = SimpleArray(np.sum(data, axis=1, keepdims=True ), rs,name="truth_ragged")
+        true_arr = SimpleArray(truth, rs,name="truth_ragged")
         farrint = SimpleArray(np.array(data,dtype='int32'), rs, name="features_int_ragged")
         
         return [farr,farrint],[true_arr],[]
