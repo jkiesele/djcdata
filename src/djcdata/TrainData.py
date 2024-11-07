@@ -148,7 +148,7 @@ class TrainData_mock(TrainData):
         rs = np.array(rs)
 
         farr = SimpleArray(data, rs,name="features_ragged")
-        true_arr = SimpleArray(data, rs,name="truth_ragged")
+        true_arr = SimpleArray(np.sum(data, axis=1, keepdims=True ), rs,name="truth_ragged")
         farrint = SimpleArray(np.array(data,dtype='int32'), rs, name="features_int_ragged")
         
         return [farr,farrint],[true_arr],[]
