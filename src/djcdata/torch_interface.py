@@ -58,12 +58,11 @@ class DJCDataLoader:
 
     def __iter__(self):
         # Reinitialize the iterator for a new epoch
-        self.generator.prepareNextEpoch()
-        self.iterator = iter(self.generator.feedNumpyData())
-
         # Optionally reshuffle the file list
         if self.shuffle:
             self.generator.shuffleFileList()
+        self.generator.prepareNextEpoch()
+        self.iterator = iter(self.generator.feedNumpyData())
 
         return self
 
