@@ -352,8 +352,8 @@ trainData  trainDataGenerator::prepareBatch(){
 
         if(nsamplesprocessed_ + bufferelements < ntotal_){
             if (filecount_ >= orig_infiles_.size()){
-                std::cout << "trainDataGenerator<T>::prepareBatch: filecount: "<<  filecount_ <<" infiles "<< orig_infiles_.size()<<
-                        " processed: "<< nsamplesprocessed_ << " buffer:  "<< bufferelements << " total "<< ntotal_ << std::endl;
+                std::cout << "trainDataGenerator<T>::prepareBatch: filecount: "<<  filecount_ <<", total infiles: "<< orig_infiles_.size()<<
+                        " processed: "<< nsamplesprocessed_ << ", in buffer:  "<< bufferelements << ", total expected: "<< ntotal_ << std::endl;
                 throw std::runtime_error(
                         "trainDataGenerator<T>::prepareBatch: more file reads requested than batches in the sample");
 
