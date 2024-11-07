@@ -67,9 +67,12 @@ class DJCDataLoader:
         return self
 
     def __next__(self):
-        data = next(self.iterator)
-        # Convert numpy arrays to torch tensors and move to device
-        return self._convert_to_tensors(data)
+        try:
+            data = next(self.iterator)
+            # Convert numpy arrays to torch tensors and move to device
+            return self._convert_to_tensors(data)
+        except StopIteration:
+            return None
 
     def _convert_to_tensors(self, data):
         # data can be (x, y) or (x, y, w)
