@@ -143,7 +143,7 @@ class TrainData_mock(TrainData):
             n = np.random.randint(20,100)
             data.append(np.random.normal(size=(n,self.n_features)))
             truth.append(np.random.normal(size=(n,self.n_truth)))
-            rs.append(n + rs[-1])
+            rs.append(n)
 
         # make them numpy arrays
         data = np.concatenate(data, axis=0)
@@ -152,7 +152,7 @@ class TrainData_mock(TrainData):
         truth = np.concatenate(truth, axis=0)
         truth = np.array(truth,dtype='float32')
 
-        rs = np.array(rs)
+        rs = np.cumsum(np.array(rs))
 
         farr = SimpleArray(data, rs,name="features_ragged")
         true_arr = SimpleArray(truth, rs,name="truth_ragged")
