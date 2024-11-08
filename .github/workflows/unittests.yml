@@ -1,60 +1,38 @@
 name: Run tests
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  py_three_nine:
+  test:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+      max-parallel: 4  # Adjust as needed
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.9
-    - name: Check cmake
-      run: |
-        cmake --version
-    - name: run install
-      run: |
-        python3 setup.py install
-    - name: install torch for testing only
-      run: |
-        pip3 install torch
-    - name: run unit tests
-      run: |
-        cd test
-        python3 runtests.py
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
 
-  py_three_eleven:
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
+      - name: Check CMake version
+        run: cmake --version
 
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-      
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.11
-    - name: Check cmake
-      run: |
-        cmake --version
-    - name: run install
-      run: |
-        python3 setup.py install
-    - name: install torch for testing only
-      run: |
-        pip3 install torch
-    - name: run unit tests
-      run: |
-        cd test
-        python3 runtests.py
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch
+
+      - name: Build and install the package
+        run: python setup.py install
+
+      - name: Run unit tests
+        run: |
+          cd test
+          python runtests.py
