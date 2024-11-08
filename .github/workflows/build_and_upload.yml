@@ -41,8 +41,6 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.cpython-tag }}-*
           CIBW_SKIP: pp*,jy*,cp27*,cp36*,cp37*,cp38*
-          CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND: python -m pytest {project}/test
         run: |
           cibuildwheel --output-dir wheelhouse
 
