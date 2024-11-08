@@ -1,0 +1,4 @@
+include CMakeLists.txt
+recursive-include lib *
+recursive-include src/djcdata/interface *
+recursive-include src/djcdata/src *
