@@ -2,7 +2,7 @@ name: Build and Upload Wheels
 
 on:
   push:
-    branches: [ main ]  # Change as needed
+    branches: [ master ]  # Change as needed
   workflow_dispatch:
 
 jobs:
