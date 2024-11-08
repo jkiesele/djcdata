@@ -10,8 +10,34 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.9", "3.10", "3.11"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.9"
+            cpython-tag: "cp39"
+          - os: ubuntu-latest
+            python-version: "3.10"
+            cpython-tag: "cp310"
+          - os: ubuntu-latest
+            python-version: "3.11"
+            cpython-tag: "cp311"
+          - os: windows-latest
+            python-version: "3.9"
+            cpython-tag: "cp39"
+          - os: windows-latest
+            python-version: "3.10"
+            cpython-tag: "cp310"
+          - os: windows-latest
+            python-version: "3.11"
+            cpython-tag: "cp311"
+          - os: macos-latest
+            python-version: "3.9"
+            cpython-tag: "cp39"
+          - os: macos-latest
+            python-version: "3.10"
+            cpython-tag: "cp310"
+          - os: macos-latest
+            python-version: "3.11"
+            cpython-tag: "cp311"
 
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +57,7 @@ jobs:
 
       - name: Build wheels with cibuildwheel
         env:
-          CIBW_BUILD: cp${{ replace(matrix.python-version, '.', '') }}-*
+          CIBW_BUILD: ${{ matrix.cpython-tag }}-*
           CIBW_SKIP: pp*,jy*,cp27*,cp36*,cp37*,cp38*
           CIBW_TEST_REQUIRES: pytest
           CIBW_TEST_COMMAND: python -m pytest {project}/test
