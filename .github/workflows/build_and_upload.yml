@@ -2,8 +2,8 @@ name: Build and Upload Wheels
 
 on:
   push:
-    branches: [ master ]  # Change as needed
-  workflow_dispatch:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build_wheels:
