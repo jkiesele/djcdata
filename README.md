@@ -29,13 +29,18 @@
 
 ## Installation
 
-To install the latest version of `djcdata` from GitHub, run:
+The package can be installed via pip for linux distributions from python 3.9 - 3.11:
+```
+pip install djcdata
+```
+
+For other distributions, you can install the latest version of `djcdata` from GitHub; run:
 
 ```bash
 pip install git+https://github.com/jkiesele/djcdata
 ```
 
-**Note**: The installation requires `cmake` version 3 or higher. On some systems (e.g., `lxplus7`), you might need to add `cmake` to your `PATH`:
+**Note**: The github installation requires `cmake` version 3 or higher. On some systems (e.g., `lxplus7`), you might need to add `cmake` to your `PATH`:
 
 ```bash
 export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/latest/Linux-x86_64/bin:$PATH
