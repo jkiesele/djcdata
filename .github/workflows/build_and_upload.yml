@@ -22,10 +22,10 @@ jobs:
           - os: ubuntu-latest
             python-version: "3.11"
             cpython-tag: "cp311"
-          - os: macos-latest  # Add macOS
+          - os: macos-14  # Add macOS
             python-version: "3.9"
             cpython-tag: "cp39"
-          - os: macos-latest
+          - os: macos-14
             python-version: "3.10"
             cpython-tag: "cp310"
           - os: macos-latest
