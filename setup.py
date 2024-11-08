@@ -81,7 +81,7 @@ setup(
     author_email='jan.kieseler@cern.ch',
     url='https://github.com/jkiesele/djcdata',
     description='DeepJetCore data formats and pipeline standalone',
-    long_description='',
+    long_description='DeepJetCore data formats and pipeline standalone',
     packages=find_packages('src'),
     package_dir={'':'src'},
     ext_modules=[CMakeExtension('djcdata/compiled')],
