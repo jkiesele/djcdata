@@ -34,11 +34,10 @@ class DJCDataLoader:
         self.data_collection = DataCollection(data_path)
 
         # Create the generator
-        self.generator = self.data_collection.invokeGenerator()
+        self.generator = self.data_collection.invokeGenerator(dict_output=dict_output)
 
         # Set batch size
         self.generator.setBatchSize(batch_size)
-        self.generator.dict_output = dict_output
 
         # Set shuffling
         self.shuffle = shuffle
@@ -116,7 +115,7 @@ class DJCDataLoader:
 
         # Update the generator for training data
         batchsize = self.generator.getBatchSize()
-        self.generator = self.data_collection.invokeGenerator()
+        self.generator = self.data_collection.invokeGenerator(dict_output=self.generator.dict_output)
         self.generator.setBatchSize(batchsize)
         self.generator.prepareNextEpoch()
         self.iterator = iter(self.generator.feedNumpyData())
@@ -124,9 +123,8 @@ class DJCDataLoader:
         # Create a new DJCDataLoader for the validation data
         val_loader = DJCDataLoader.__new__(DJCDataLoader)
         val_loader.data_collection = val_data_collection
-        val_loader.generator = val_loader.data_collection.invokeGenerator()
+        val_loader.generator = val_loader.data_collection.invokeGenerator(dict_output=self.generator.dict_output)
         val_loader.generator.setBatchSize(batchsize)
-        val_loader.generator.dict_output = self.generator.dict_output
         val_loader.shuffle = False  # Typically, validation data is not shuffled
         val_loader.device = self.device
 

@@ -71,6 +71,12 @@ class TestDJCDataLoader(unittest.TestCase):
                     passed = False
                     break
 
+                #check if x is really a dictionary
+                if not isinstance(x, dict):
+                    print(f"Unexpected data type: {type(x)}")
+                    passed = False
+                    break
+
                 data = x['features_ragged']
                 rs = x['features_ragged_rowsplits']
                 dint = x['features_int_ragged']
