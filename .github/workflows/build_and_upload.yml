@@ -37,18 +37,18 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-
       # Conditional step to install gettext on macOS
       - name: Install gettext on macOS
         if: matrix.os == 'macos-latest'
         run: |
           brew install gettext
           brew link --force gettext
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
           
       - name: Install cibuildwheel
         run: |
