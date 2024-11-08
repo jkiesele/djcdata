@@ -82,6 +82,7 @@ setup(
     url='https://github.com/jkiesele/djcdata',
     description='DeepJetCore data formats and pipeline standalone',
     long_description='DeepJetCore data formats and pipeline standalone',
+    long_description_content_type="text/markdown",
     packages=find_packages('src'),
     package_dir={'':'src'},
     ext_modules=[CMakeExtension('djcdata/compiled')],
