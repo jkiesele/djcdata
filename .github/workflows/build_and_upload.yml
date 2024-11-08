@@ -33,15 +33,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
-      #    Conditional step: install additional dependencies only for Python 3.9
-      - name: Install specific dependencies for Python 3.9
-        if: matrix.python-version == '3.9'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository -y ppa:deadsnakes/ppa
-          sudo apt-get update
-          sudo apt-get install -y python3.9 python3.9-dev python3.9-venv
     
       - name: Install cibuildwheel
         run: |
