@@ -57,11 +57,11 @@ class TrainData(trainData):
     def _convertToCppType(self,a,helptext):
         saout=None
         if str(type(a)) == "<class 'djcdata.SimpleArray.SimpleArray'>":
-            saout = a.sa
+            saout = a.sa.copy()  # make sure we have a copy, not the original as from the python interface it is not transparent if it is a reference or not
         elif str(type(a)) == "<type 'numpy.ndarray'>" or str(type(a)) == "<class 'numpy.ndarray'>":
             rs = np.array([])
             a = SimpleArray(a,rs)
-            saout = a.sa
+            saout = a.sa # here we do not copy, as the array has been created directly from numpy
         else:
             raise ValueError("TrainData._convertToCppType MUST produce either a list of numpy arrays or a list of DeepJetCore simpleArrays!")
         
