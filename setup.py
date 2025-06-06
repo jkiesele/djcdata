@@ -76,7 +76,7 @@ bins = glob.glob('src/djcdata/bin/*py')
 print(bins)     
 setup(
     name='djcdata',
-    version='2.1.2', #start from deepjetcore included version
+    version='2.1.3', #start from deepjetcore included version
     author='Jan Kieseler',
     author_email='jan.kieseler@cern.ch',
     url='https://github.com/jkiesele/djcdata',

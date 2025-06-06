@@ -28,9 +28,9 @@ jobs:
           #- os: macos-latest
           #  python-version: "3.10"
           #  cpython-tag: "cp310"
-          - os: macos-latest
-            python-version: "3.11"
-            cpython-tag: "cp311"
+          #- os: macos-latest
+          #  python-version: "3.11"
+          #  cpython-tag: "cp311"
 
     steps:
       - uses: actions/checkout@v3
