@@ -57,7 +57,8 @@ class TrainData(trainData):
     def _convertToCppType(self,a,helptext):
         saout=None
         if str(type(a)) == "<class 'djcdata.SimpleArray.SimpleArray'>":
-            saout = a.sa.copy()  # make sure we have a copy, not the original as from the python interface it is not transparent if it is a reference or not
+            acp = a.copy()  # make sure we have a copy, not the original as from the python interface it is not transparent if it is a reference or not
+            saout = acp.sa  
         elif str(type(a)) == "<type 'numpy.ndarray'>" or str(type(a)) == "<class 'numpy.ndarray'>":
             rs = np.array([])
             a = SimpleArray(a,rs)
