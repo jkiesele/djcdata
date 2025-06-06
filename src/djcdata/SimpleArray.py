@@ -4,7 +4,7 @@ import numpy as np
 
 class SimpleArray(object):
     
-    def __init__(self, nparr=None, nprs=np.array([],dtype='int64'), dtype='float32', name=""):
+    def __init__(self, nparr=None, nprs=np.array([],dtype='int64'), dtype='float32', name="", feature_names=None):
         
         assert nparr is not None or dtype is not None
         self.dtype=None
@@ -14,7 +14,9 @@ class SimpleArray(object):
         if nparr is not None:
             self.createFromNumpy(nparr, nprs)
         self.setName(name)
-        
+        if feature_names is not None:
+            self.setFeatureNames(feature_names)
+
     def __eq__(self,other):
         if self.sa.dtypeI() != other.sa.dtypeI():
             return False
@@ -106,5 +108,5 @@ class SimpleArray(object):
     
     def copy(self):
         arr,rs = self.sa.copyToNumpy(False)
-        return SimpleArray(arr,rs)
+        return SimpleArray(arr,rs, name=self.name(), feature_names=self.featureNames())
     
