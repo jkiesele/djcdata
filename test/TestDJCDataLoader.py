@@ -1,9 +1,11 @@
 import unittest
 import shutil
 import torch
+import os
+import sys
 
 # Adjust the import path to include the directory containing TestTrainDataGenerator.py
-# This assumes that the current script is in the same directory
+sys.path.append(os.path.dirname(__file__))
 from TestTrainDataGenerator import (
     RaggedTester,
     TempFileList,
