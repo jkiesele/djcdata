@@ -17,6 +17,7 @@
 #include "IO.h"
 
 #include <iostream>
+#include <memory>
 
 #include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
@@ -31,6 +32,12 @@ namespace djc{
 class typeContainer{
 public:
 
+    typeContainer() = default;
+    typeContainer(const typeContainer& rhs);
+    typeContainer& operator=(const typeContainer& rhs);
+    typeContainer(typeContainer&& rhs) = default;
+    typeContainer& operator=(typeContainer&& rhs) = default;
+
     void push_back(simpleArrayBase& a);
     void move_back(simpleArrayBase& a);
 
@@ -38,7 +45,6 @@ public:
     bool operator!=(const typeContainer& rhs)const{
         return !(*this==rhs);
     }
-
 
     simpleArrayBase& at(size_t idx);
     const simpleArrayBase& at(size_t idx)const;
@@ -52,8 +58,7 @@ public:
 
     void clear();
 
-    size_t size()const{return sorting_.size();}
-
+    size_t size()const{return arrays_.size();}
 
     void writeToFile(FILE *&) const;
     inline void readFromFile(FILE *&f){
@@ -67,12 +72,7 @@ public:
 private:
     void readFromFile_priv(FILE *& f, bool justmetadata);
 
-    std::vector<simpleArray_float32> farrs_;
-    std::vector<simpleArray_int32> iarrs_;
-
-    enum typesorting{isfloat,isint};
-    std::vector<std::pair<typesorting,size_t> > sorting_;
-
+    std::vector<std::unique_ptr<simpleArrayBase> > arrays_;
 };
 
 

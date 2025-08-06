@@ -9,11 +9,16 @@
 
 namespace py = pybind11;
 
+template<class M>
+void makeBaseArr(M& m){
+    using namespace djc;
+    py::class_<simpleArrayBase>(m, "simpleArrayBase");
+}
 
 template<class T, class M>
 void makeArr(M& m, std::string name){
     using namespace djc;
-    py::class_<simpleArray<T> >(m, name.data())
+    py::class_<simpleArray<T>, simpleArrayBase >(m, name.data())
             .def(py::init())
 
             .def(py::self == py::self)
@@ -103,14 +108,9 @@ void makeTD(M & m, std::string name){
         //        }
         //    ))
 
-        .def("storeFeatureArray", static_cast<int (trainData::*)(simpleArray_float32 &)>(&trainData::storeFeatureArray))
-        .def("storeFeatureArray", static_cast<int (trainData::*)(simpleArray_int32 &)>(&trainData::storeFeatureArray))
-
-        .def("storeTruthArray", static_cast<int (trainData::*)(simpleArray_float32 &)>(&trainData::storeTruthArray))
-        .def("storeTruthArray", static_cast<int (trainData::*)(simpleArray_int32 &)>(&trainData::storeTruthArray))
-
-        .def("storeWeightArray", static_cast<int (trainData::*)(simpleArray_float32 &)>(&trainData::storeWeightArray))
-        .def("storeWeightArray", static_cast<int (trainData::*)(simpleArray_int32 &)>(&trainData::storeWeightArray))
+        .def("storeFeatureArray", &trainData::storeFeatureArray)
+        .def("storeTruthArray", &trainData::storeTruthArray)
+        .def("storeWeightArray", &trainData::storeWeightArray)
 
 
         .def("nFeatureArrays", &trainData::nFeatureArrays)
@@ -194,6 +194,7 @@ void makeTDG(M & m, std::string name){
 
 //warp it up
 PYBIND11_MODULE(compiled, m) {
+    makeBaseArr(m);
     makeArr<float>(m,"simpleArrayF");
     makeArr<int32_t>(m,"simpleArrayI");
 
