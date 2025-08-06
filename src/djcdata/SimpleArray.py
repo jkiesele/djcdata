@@ -69,9 +69,13 @@ class SimpleArray(object):
         fnames = self.featureNames()
         self._setDtype(str(nparr.dtype))
         if nprs.dtype == 'int32':
-            self.sa.createFromNumpy(nparr, nprs.as_type('int64')) 
+            # numpy arrays use ``astype`` for casting; ``as_type`` does not
+            # exist and would raise an AttributeError when a rowsplit array
+            # with int32 dtype is provided.  Cast to int64 before passing the
+            # data to the underlying C++ implementation.
+            self.sa.createFromNumpy(nparr, nprs.astype('int64'))
         else:
-            self.sa.createFromNumpy(nparr, nprs) 
+            self.sa.createFromNumpy(nparr, nprs)
         self.setName(name)
         self.setFeatureNames(fnames)
     
