@@ -51,17 +51,32 @@ class TestSimpleArray(unittest.TestCase):
         
     def test_createFromNumpyInt(self):
         print('TestSimpleArray: createFromNumpyInt')
-        
+
         arr,rs = self.createNumpy('int32')
-        
+
         a = SimpleArray(dtype='int32')
         a.createFromNumpy(arr,rs)
-        
+
         narr, nrs = a.copyToNumpy()
         nrs=nrs[:,0]
-        
+
         diff = np.max(np.abs(narr-arr))
         diff += np.max(np.abs(nrs-rs))
+        self.assertTrue(diff< 0.000001)
+
+    def test_createFromNumpy_rowsplits_int32(self):
+        print('TestSimpleArray: createFromNumpy_rowsplits_int32')
+        arr = np.array(np.random.rand(500,3,5,6)*100., dtype='float32')
+        rs = np.array([0,100,230,500], dtype='int32')
+
+        a = SimpleArray(dtype='float32')
+        a.createFromNumpy(arr,rs)
+
+        narr, nrs = a.copyToNumpy()
+        nrs = nrs[:,0]
+
+        diff = np.max(np.abs(narr-arr))
+        diff += np.max(np.abs(nrs-rs.astype('int64')))
         self.assertTrue(diff< 0.000001)
         
     def test_dynamicTypeChange(self):

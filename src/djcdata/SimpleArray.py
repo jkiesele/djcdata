@@ -68,10 +68,10 @@ class SimpleArray(object):
         name = self.name()
         fnames = self.featureNames()
         self._setDtype(str(nparr.dtype))
-        if nprs.dtype == 'int32':
-            self.sa.createFromNumpy(nparr, nprs.as_type('int64')) 
+        if nprs.dtype == np.dtype('int32'):
+            self.sa.createFromNumpy(nparr, nprs.astype('int64'))
         else:
-            self.sa.createFromNumpy(nparr, nprs) 
+            self.sa.createFromNumpy(nparr, nprs)
         self.setName(name)
         self.setFeatureNames(fnames)
     
