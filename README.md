@@ -202,7 +202,8 @@ for epoch in range(num_epochs):
 
         features1 = x_batch['features1']
         features2 = x_batch['features2']
-        # The dictionary keys are the names defined for the SimpleArrays in the converFromSource function
+        # The dictionary keys are the names defined for the SimpleArrays in the
+        # [convertFromSourceFile](src/djcdata/TrainData.py#L114) function
 
         # Forward pass, loss computation, etc.
         # ...
