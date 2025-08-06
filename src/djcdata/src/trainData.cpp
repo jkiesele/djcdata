@@ -5,74 +5,87 @@ namespace py=pybind11;
 
 namespace djc{
 
-/*
- *
-    std::vector<simpleArray_float32> farrs_;
-    std::vector<simpleArray_int32> iarrs_;
+// typeContainer ----------------------------------------------------
 
-    enum typesorting{isfloat,isint};
-    std::vector<std::pair<typesorting,size_t> > sorting_;
- */
+typeContainer::typeContainer(const typeContainer& rhs){
+    for(const auto& p: rhs.arrays_){
+        if(p->dtype() == simpleArrayBase::float32)
+            arrays_.emplace_back(new simpleArray_float32(
+                    dynamic_cast<const simpleArray_float32&>(*p)));
+        else if(p->dtype() == simpleArrayBase::int32)
+            arrays_.emplace_back(new simpleArray_int32(
+                    dynamic_cast<const simpleArray_int32&>(*p)));
+    }
+}
+
+typeContainer& typeContainer::operator=(const typeContainer& rhs){
+    if(this!=&rhs){
+        arrays_.clear();
+        for(const auto& p: rhs.arrays_){
+            if(p->dtype() == simpleArrayBase::float32)
+                arrays_.emplace_back(new simpleArray_float32(
+                        dynamic_cast<const simpleArray_float32&>(*p)));
+            else if(p->dtype() == simpleArrayBase::int32)
+                arrays_.emplace_back(new simpleArray_int32(
+                        dynamic_cast<const simpleArray_int32&>(*p)));
+        }
+    }
+    return *this;
+}
 
 void typeContainer::push_back(simpleArrayBase& a){
-    if(a.dtype() == simpleArrayBase::float32){
-        farrs_.push_back(dynamic_cast<simpleArray_float32&>(a));
-        sorting_.push_back({isfloat,farrs_.size()-1});
-    }
-    else {//if(a.dtype() == simpleArrayBase::int32){
-        iarrs_.push_back(dynamic_cast<simpleArray_int32&>(a));
-        sorting_.push_back({isint,iarrs_.size()-1});
-    }
+    if(a.dtype() == simpleArrayBase::float32)
+        arrays_.emplace_back(new simpleArray_float32(
+                dynamic_cast<simpleArray_float32&>(a)));
+    else
+        arrays_.emplace_back(new simpleArray_int32(
+                dynamic_cast<simpleArray_int32&>(a)));
 }
+
 void typeContainer::move_back(simpleArrayBase& a){
-    if(a.dtype() == simpleArrayBase::float32){
-        farrs_.push_back(std::move(dynamic_cast<simpleArray_float32&>(a)));
-        sorting_.push_back({isfloat,farrs_.size()-1});
-    }
-    else {//if(a.dtype() == simpleArrayBase::int32){
-        iarrs_.push_back(std::move(dynamic_cast<simpleArray_int32&>(a)));
-        sorting_.push_back({isint,iarrs_.size()-1});
-    }
+    if(a.dtype() == simpleArrayBase::float32)
+        arrays_.emplace_back(new simpleArray_float32(
+                std::move(dynamic_cast<simpleArray_float32&>(a))));
+    else
+        arrays_.emplace_back(new simpleArray_int32(
+                std::move(dynamic_cast<simpleArray_int32&>(a))));
 }
+
 bool typeContainer::operator==(const typeContainer& rhs)const{
     if(size() != rhs.size())
         return false;
-    if(farrs_.size() != rhs.farrs_.size())
-        return false;
-
-    if(sorting_ != rhs.sorting_)
-        return false;
-
-    for(size_t i=0;i<farrs_.size();i++){
-        if(farrs_.at(i) != rhs.farrs_.at(i))
+    for(size_t i=0;i<arrays_.size();i++){
+        auto& a = *arrays_.at(i);
+        const auto& b = *rhs.arrays_.at(i);
+        if(a.dtype() != b.dtype())
             return false;
-    }
-    for(size_t i=0;i<iarrs_.size();i++){
-        if(iarrs_.at(i) != rhs.iarrs_.at(i))
+        if(a.dtype() == simpleArrayBase::float32){
+            if(dynamic_cast<const simpleArray_float32&>(a) !=
+               dynamic_cast<const simpleArray_float32&>(b))
+                return false;
+        }
+        else if(a.dtype() == simpleArrayBase::int32){
+            if(dynamic_cast<const simpleArray_int32&>(a) !=
+               dynamic_cast<const simpleArray_int32&>(b))
+                return false;
+        }
+        else
             return false;
     }
     return true;
 }
+
 simpleArrayBase& typeContainer::at(size_t idx){
-    if(idx>=sorting_.size())
-        throw std::out_of_range("typeContainer::at: requested "+std::to_string(idx)+" of "+std::to_string(sorting_.size()));
-    auto s = sorting_.at(idx);
-    if(s.first == isfloat)
-        return farrs_.at(s.second);
-    else //if(s.first == isint)
-        return iarrs_.at(s.second);
-
+    if(idx>=arrays_.size())
+        throw std::out_of_range("typeContainer::at: requested "+std::to_string(idx)+" of "+std::to_string(arrays_.size()));
+    return *arrays_.at(idx);
 }
+
 const simpleArrayBase& typeContainer::at(size_t idx)const{
-    if(idx>=sorting_.size())
-        throw std::out_of_range("typeContainer::at: requested "+std::to_string(idx)+" of "+std::to_string(sorting_.size()));
-    auto s = sorting_.at(idx);
-    if(s.first == isfloat)
-        return farrs_.at(s.second);
-    else //if(s.first == isint)
-        return iarrs_.at(s.second);
+    if(idx>=arrays_.size())
+        throw std::out_of_range("typeContainer::at: requested "+std::to_string(idx)+" of "+std::to_string(arrays_.size()));
+    return *arrays_.at(idx);
 }
-
 
 simpleArray_float32& typeContainer::at_asfloat32(size_t idx){
     if(at(idx).dtype() != simpleArrayBase::float32)
@@ -98,23 +111,15 @@ const simpleArray_int32& typeContainer::at_asint32(size_t idx)const{
     return dynamic_cast<const simpleArray_int32&>(at(idx));
 }
 
-
 void typeContainer::clear(){
-    farrs_.clear();
-    iarrs_.clear();
-    sorting_.clear();
+    arrays_.clear();
 }
 
 void typeContainer::writeToFile(FILE *& ofile) const{
     size_t isize=size();
     io::writeToFile(&isize,ofile);
-    for(const auto& i: sorting_){
-        if(i.first == isfloat){
-            farrs_.at(i.second).addToFileP(ofile);
-        }
-        else {// if(i.first == isint){
-            iarrs_.at(i.second).addToFileP(ofile);
-        }
+    for(const auto& a : arrays_){
+        a->addToFileP(ofile);
     }
 }
 
@@ -123,18 +128,20 @@ void typeContainer::readFromFile_priv(FILE *& ifile, bool justmetadata){
     size_t isize = 0;
     io::readFromFile(&isize,ifile);
     for(size_t i=0;i<isize;i++){
-        simpleArray_float32 tmp;//type doesn't matter
+        simpleArray_float32 tmp; //type doesn't matter, just for util
         auto dtype = tmp.readDtypeTypeFromFileP(ifile);
         if(dtype == simpleArrayBase::float32){
-            simpleArray_float32 farr;
-            farr.readFromFileP(ifile,justmetadata);
-            move_back(farr);
+            auto arr = std::make_unique<simpleArray_float32>();
+            arr->readFromFileP(ifile,justmetadata);
+            arrays_.emplace_back(std::move(arr));
         }
-        else{ //if(dtype==simpleArrayBase::int32){
-            simpleArray_int32 iarr;
-            iarr.readFromFileP(ifile,justmetadata);
-            move_back(iarr);
+        else if(dtype == simpleArrayBase::int32){
+            auto arr = std::make_unique<simpleArray_int32>();
+            arr->readFromFileP(ifile,justmetadata);
+            arrays_.emplace_back(std::move(arr));
         }
+        else
+            throw std::runtime_error("typeContainer::readFromFile_priv: unsupported dtype");
     }
 }
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.4)
 project(djcdata)
 
 include(CMakePrintHelpers)
@@ -10,10 +10,13 @@ include_directories(${SOURCE_DIR}/../interface)
 
 file(GLOB_RECURSE SOURCES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.c")
 
-add_subdirectory(lib/pybind11)
-pybind11_add_module(compiled ${SOURCES} "${SOURCE_DIR}/bind/bindings.cpp")
+execute_process(
+    COMMAND ${PYTHON_EXECUTABLE} -m pybind11 --cmakedir
+    OUTPUT_VARIABLE pybind11_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+find_package(pybind11 CONFIG REQUIRED PATHS ${pybind11_DIR})
+pybind11_add_module(compiled ${SOURCES})
 
-#shared lib lib
-include_directories(lib/pybind11/include)
+# shared lib lib
 # add python etc to be added, also copying includes etc
 # add_library(djcdata SHARED ${SOURCES})

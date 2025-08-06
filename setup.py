@@ -88,6 +88,7 @@ setup(
     ext_modules=[CMakeExtension('djcdata/compiled')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    install_requires=['numpy'],
+    install_requires=['numpy', 'pybind11'],
+    setup_requires=['pybind11'],
     scripts=bins
 )
