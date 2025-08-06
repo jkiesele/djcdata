@@ -108,9 +108,9 @@ void makeTD(M & m, std::string name){
         //        }
         //    ))
 
-        .def("storeFeatureArray", &trainData::storeFeatureArray)
-        .def("storeTruthArray", &trainData::storeTruthArray)
-        .def("storeWeightArray", &trainData::storeWeightArray)
+        .def("storeFeatureArray", static_cast<int (trainData::*)(simpleArrayBase&)>(&trainData::storeFeatureArray))
+        .def("storeTruthArray", static_cast<int (trainData::*)(simpleArrayBase&)>(&trainData::storeTruthArray))
+        .def("storeWeightArray", static_cast<int (trainData::*)(simpleArrayBase&)>(&trainData::storeWeightArray))
 
 
         .def("nFeatureArrays", &trainData::nFeatureArrays)
