@@ -1,3 +1,5 @@
+# import as djcdata.torch_interface
+
 #try to import torch, if not, complain that this interface requires torch
 try:
     import torch

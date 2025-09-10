@@ -1,3 +1,4 @@
+# import as djcdata.TrainData
 '''
 Created on 20 Feb 2017
 

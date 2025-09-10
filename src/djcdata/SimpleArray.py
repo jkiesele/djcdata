@@ -1,4 +1,6 @@
- 
+#import as djcdata.SimpleArray 
+
+
 from .compiled import simpleArrayF, simpleArrayI
 import numpy as np
 

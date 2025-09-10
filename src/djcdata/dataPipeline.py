@@ -1,3 +1,4 @@
+#import as djcdata.dataPipeline
 
 from .compiled import trainDataGenerator
 from . import DataCollection

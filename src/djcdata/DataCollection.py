@@ -1,3 +1,5 @@
+# import as djcdata.DataCollection
+
 '''
 Created on 21 Feb 2017
 
