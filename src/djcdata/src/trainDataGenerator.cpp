@@ -40,11 +40,10 @@ void trainDataGenerator::setBuffer(const trainData& td){
     clear();
     if(td.featureShapes().size()<1 || td.featureShapes().at(0).size()<1)
         throw std::runtime_error("trainDataGenerator<T>::setBuffer: no features filled in trainData object");
-    auto hasRagged = tdHasRaggedDimension(td);
 
-    auto rs = td.getFirstRowsplits();
-    if(rs.size())
-        orig_rowsplits_.push_back(rs);
+    auto allrs = td.getAllRowsplits();
+    if(allrs.size())
+        orig_rowsplits_.push_back(allrs);
     shuffle_indices_.push_back(0);
     std::vector<size_t> vec;
     for(size_t i=0;i<td.nElements();i++)
@@ -113,10 +112,11 @@ void trainDataGenerator::readInfo(){
             hasRagged = tdHasRaggedDimension(td);
         }
         if(hasRagged){
-            std::vector<int64_t> rowsplits = td.readShapesAndRowSplitsFromFile(f, firstfile);//check consistency only for first
+            auto allrs = td.readShapesAndRowSplitsFromFile(f);
             if(debuglevel>1)
-                std::cout << "rowsplits.size() " <<rowsplits.size() << ": "<<f <<  std::endl; //debuglevel
-            orig_rowsplits_.push_back(rowsplits);
+                std::cout << "rowsplits groups: " << allrs.size() << " (first size: " << (allrs.size()?allrs.at(0).size():0) << "): " << f << std::endl;
+            if(allrs.size())
+                orig_rowsplits_.push_back(allrs);
         }
         firstfile=false;
         ntotal_ += td.nElements();
@@ -172,13 +172,30 @@ void trainDataGenerator::prepareSplitting(){
     std::vector<int64_t> allrs;
     for(size_t i=0;i<orig_rowsplits_.size();i++){
         auto shuffled_idx = shuffle_indices_.at(i);
-        auto thisrs = orig_rowsplits_.at(shuffled_idx); //inject by file shuffle here
-        thisrs = subShuffleRowSplits(thisrs, sub_shuffle_indices_.at(shuffled_idx));
+        const auto& file_rss = orig_rowsplits_.at(shuffled_idx); //inject by file shuffle here
+
+        // Build a combined rowsplit for this file by summing sub-elements per event across all rowsplit groups.
+        // All groups must have the same number of events (same rowsplit length).
+        std::vector<int64_t> file_combined_rs;
+        for(const auto& rs: file_rss){
+            auto shuffled_rs = subShuffleRowSplits(rs, sub_shuffle_indices_.at(shuffled_idx));
+            if(file_combined_rs.empty()){
+                file_combined_rs = shuffled_rs;
+            } else {
+                auto nelems_a = simpleArrayBase::dataSplitToSplitIndices(file_combined_rs);
+                auto nelems_b = simpleArrayBase::dataSplitToSplitIndices(shuffled_rs);
+                if(nelems_a.size() != nelems_b.size())
+                    throw std::runtime_error("trainDataGenerator::prepareSplitting: rowsplit groups have different numbers of events in the same file");
+                for(size_t j=0;j<nelems_a.size();j++)
+                    nelems_a.at(j) += nelems_b.at(j);
+                file_combined_rs = simpleArrayBase::splitToDataSplitIndices(nelems_a);
+            }
+        }
 
         if(i==0 || allrs.size()==0){
-            allrs=thisrs;}
-        else{
-            allrs = simpleArrayBase::mergeRowSplits(allrs,thisrs);
+            allrs = file_combined_rs;
+        } else {
+            allrs = simpleArrayBase::mergeRowSplits(allrs, file_combined_rs);
         }
     }
 

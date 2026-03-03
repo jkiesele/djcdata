@@ -439,36 +439,39 @@ std::vector<int64_t> trainData::getFirstRowsplits()const{
     return std::vector<int64_t>();
 }
 
-std::vector<int64_t> trainData::readShapesAndRowSplitsFromFile(const std::string& filename, bool checkConsistency){
-    std::vector<int64_t> rowsplits;
+std::vector<std::vector<int64_t>> trainData::getAllRowsplits()const{
+    std::vector<std::vector<int64_t>> out;
+    const std::vector<const typeContainer* > vv = {&feature_arrays_, &truth_arrays_, &weight_arrays_};
+    for(const auto& a: vv){
+        for(size_t i=0;i<a->size();i++){
+            const auto& rs = a->at(i).rowsplits();
+            if(!rs.size()) continue;
+            bool found = false;
+            for(const auto& existing: out)
+                if(existing == rs){ found=true; break; }
+            if(!found)
+                out.push_back(rs);
+        }
+    }
+    return out;
+}
+
+std::vector<std::vector<int64_t>> trainData::readShapesAndRowSplitsFromFile(const std::string& filename){
+    std::vector<std::vector<int64_t>> all_rowsplits;
 
     FILE *ifile = fopen(filename.data(), "rb");
     checkFile(ifile,filename);
 
-    //shapes
-    std::vector<std::vector<int> > dummy;
     readNested(feature_shapes_, ifile);
     readNested(truth_shapes_, ifile);
     readNested(weight_shapes_, ifile);
 
-    //features
-    readRowSplitArray(ifile,rowsplits,checkConsistency);
-    if(!checkConsistency && rowsplits.size()){
-        fclose(ifile);
-        return rowsplits;
-    }
-    //truth
-    readRowSplitArray(ifile,rowsplits,checkConsistency);
-    if(!checkConsistency && rowsplits.size()){
-        fclose(ifile);
-        return rowsplits;
-    }
-    //weights
-    readRowSplitArray(ifile,rowsplits,checkConsistency);
+    readRowSplitArray(ifile, all_rowsplits); // features
+    readRowSplitArray(ifile, all_rowsplits); // truth
+    readRowSplitArray(ifile, all_rowsplits); // weights
 
     fclose(ifile);
-    return rowsplits;
-
+    return all_rowsplits;
 }
 
 void trainData::clear() {
@@ -488,17 +491,17 @@ void trainData::checkFile(FILE *& ifile, const std::string& filename)const{
 
 }
 
-void trainData::readRowSplitArray(FILE *& ifile, std::vector<int64_t> &rowsplits, bool check)const{
+void trainData::readRowSplitArray(FILE *& ifile, std::vector<std::vector<int64_t>> &all_rowsplits)const{
     size_t size = 0;
     io::readFromFile(&size, ifile);
     for(size_t i=0;i<size;i++){
         auto frs = simpleArrayBase::readRowSplitsFromFileP(ifile, true);
         if(frs.size()){
-            if(check){
-                if(rowsplits.size() && rowsplits != frs)
-                    throw std::runtime_error("trainData::readShapesAndRowSplitsFromFile: row splits inconsistent");
-            }
-            rowsplits=frs;
+            bool found = false;
+            for(const auto& existing: all_rowsplits)
+                if(existing == frs){ found=true; break; }
+            if(!found)
+                all_rowsplits.push_back(frs);
         }
     }
 }
