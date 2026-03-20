@@ -229,7 +229,10 @@ public:
     void readMetaDataFromFile(const std::string& filename);
 
     std::vector<int64_t> getFirstRowsplits()const;
-    std::vector<int64_t> readShapesAndRowSplitsFromFile(const std::string& filename, bool checkConsistency=true);
+    // Returns all distinct rowsplit vectors present in this trainData (one per ragged array group).
+    std::vector<std::vector<int64_t>> getAllRowsplits()const;
+    // Returns all distinct rowsplit vectors found in the file (one per ragged array, deduplicated).
+    std::vector<std::vector<int64_t>> readShapesAndRowSplitsFromFile(const std::string& filename);
 
     void clear();
 
@@ -315,7 +318,8 @@ private:
     void checkFile(FILE *& f, const std::string& filename="")const;
 
 
-    void readRowSplitArray(FILE *&, std::vector<int64_t> &rs, bool check)const;
+    // Reads one typeContainer's worth of arrays from the file, collecting all distinct rowsplits found.
+    void readRowSplitArray(FILE *&, std::vector<std::vector<int64_t>> &all_rs)const;
 
     std::vector<std::vector<int> > getShapes(const typeContainer& a)const;
 

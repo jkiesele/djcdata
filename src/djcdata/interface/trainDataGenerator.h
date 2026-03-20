@@ -127,7 +127,8 @@ private:
     std::vector<std::string> orig_infiles_;
     std::vector<size_t> shuffle_indices_;
     std::vector<std::vector<size_t> > sub_shuffle_indices_;
-    std::vector<std::vector<int64_t> > orig_rowsplits_;
+    // outer index: file index; inner vector: all distinct rowsplits for that file (one per ragged array group)
+    std::vector<std::vector<std::vector<int64_t> > > orig_rowsplits_;
     std::vector<size_t> splits_;
     std::vector<bool> usebatch_;
     int randomcount_;
