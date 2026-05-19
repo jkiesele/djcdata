@@ -1,8 +1,15 @@
+import traceback
+
 try:
     import datastructures
     from datastructures import *
-except ImportError:
-    print('datastructure modules not found. Please define TrainData definitions in a datastructures module in your python path')
+except ImportError as e:
+    print(
+        "datastructure modules not found. "
+        "Please define TrainData definitions in a datastructures module in your python path"
+    )
+    print("\nOriginal exception traceback:")
+    traceback.print_exc()
     exit()
     
 class_options=[]
