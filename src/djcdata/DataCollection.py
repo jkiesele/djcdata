@@ -367,7 +367,8 @@ class DataCollection(object):
         self.dataclass=dataclass
         td=self.dataclass()
         self.dataclass_instance=None
-        self.weighterobjects = td.createWeighterObjects(self.sourceList)
+        if redo_meansandweights:
+            self.weighterobjects = td.createWeighterObjects(self.sourceList)
 
         if self.batch_mode or self.nprocs==1:
             for sample in self.sourceList:
