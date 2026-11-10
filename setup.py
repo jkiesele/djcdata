@@ -6,7 +6,6 @@ import sysconfig
 import platform
 import subprocess
 
-from distutils.version import LooseVersion
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
@@ -26,15 +25,10 @@ class CMakeBuild(build_ext):
                 ", ".join(e.name for e in self.extensions))
 
         
-        cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)',
-                                         out.decode()).group(1))
-            
-        if cmake_version < '3.0.0':
-                raise RuntimeError("CMake >= 3.0.0 is required")
-
-        if platform.system() == "Windows":
-            if cmake_version < '3.1.0':
-                raise RuntimeError("CMake >= 3.1.0 is required on Windows")
+        cmake_version = tuple(int(x) for x in re.search(r'version\s*(\d+)\.(\d+)',
+                                                        out.decode()).groups())
+        if cmake_version < (3, 15):
+            raise RuntimeError("CMake >= 3.15 is required")
 
         for ext in self.extensions:
             self.build_extension(ext)
@@ -43,7 +37,8 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
+                      '-DPYTHON_EXECUTABLE=' + sys.executable,
+                      '-DPython_EXECUTABLE=' + sys.executable]
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
