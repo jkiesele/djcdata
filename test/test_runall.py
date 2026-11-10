@@ -6,7 +6,7 @@ from TestSimpleArray import TestSimpleArray
 from TestTrainData import TestTrainData
 from TestCompatibility import TestCompatibility
 from TestTrainDataGenerator import TestTrainDataGenerator
-from TestDJCDataLoader import TestDJCDataLoader
+from TestDJCDataLoader import TestDJCDataLoader, TestDJCDataLoaderNBatches
 from TestDataCollection import TestDataCollection
 # from TestCFunctions import TestCFunctions
 

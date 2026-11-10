@@ -62,18 +62,15 @@ public:
 
     void setBatchSize(size_t nelements){
         batchsize_= nelements;
-        if(orig_rowsplits_.size())
-            prepareSplitting();
+        prepareSplitting();
     }
     void setSquaredElementsLimit(bool use_sq_limit){
         sqelementslimit_=use_sq_limit;
-        if(orig_rowsplits_.size())
-            prepareSplitting();
+        prepareSplitting();
     }
     void setSkipTooLargeBatches(bool skipthem){
         skiplargebatches_=skipthem;
-        if(orig_rowsplits_.size())
-            prepareSplitting();
+        prepareSplitting();
     }
 
     int getNTotal()const{return ntotal_;}

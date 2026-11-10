@@ -143,7 +143,11 @@ std::vector<int64_t> trainDataGenerator::subShuffleRowSplits(const std::vector<i
 
 void trainDataGenerator::prepareSplitting(){
     splits_.clear();
+    usebatch_.clear();
     nbatches_=0;
+    npossiblebatches_=0;
+    if(!batchsize_)//no valid batch size set yet, e.g. placeholder before the actual one
+        return;
     if(orig_rowsplits_.size()<1){//no row splits, just equal batch size except for last batch
         size_t used_events=0;
         while(used_events<ntotal_){
@@ -158,6 +162,7 @@ void trainDataGenerator::prepareSplitting(){
                 break;
             }
         }
+        npossiblebatches_=nbatches_;
         if(debuglevel>1){
             std::cout << "trainDataGenerator<T>::prepareSplitting: splits" <<std::endl;
             for(const auto& s: splits_)
